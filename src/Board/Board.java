@@ -1,10 +1,12 @@
+package Board;
+
 import Pieces.Piece;
 
-public class Chessboard {
+public class Board {
     //Board array made up of pieces
     private Piece[][] board;
 
-    public Chessboard() {
+    public Board() {
         setUp();
     }
     private void setUp() {
@@ -16,6 +18,7 @@ public class Chessboard {
             }
         }
     }
+    public Tile getTile(int coordinate) { return null;}
 }
 
 
