@@ -33,9 +33,10 @@ public class Bishop extends Piece{
                     }
 
                 destination += currentVector;
-                final Tile targetTile = board.getTile(destination);
+                
 
                 if (BoardTools.isValid(destination)) {
+                    final Tile targetTile = board.getTile(destination);
                     if (targetTile.isOccupied() == false) {
                         LegalMoves.add(new Move(board, this, destination, false));
                     } else {
