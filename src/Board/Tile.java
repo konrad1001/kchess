@@ -5,8 +5,8 @@ import util.Colour;
 
 public class Tile {
 
-    private int coordinates;
-    private Piece occupier;
+    private final int coordinates;
+    private final Piece occupier;
     private final Colour colour;
 
 
@@ -14,10 +14,10 @@ public class Tile {
      * Constructor with no occupier.
      * @param coordinates
      */
-    public Tile(int coordinates, Colour colour) {
+    public Tile(int coordinates, Piece occupier) {
         this.coordinates = coordinates; 
-        this.colour = colour;
-        occupier = null;
+        this.occupier = occupier;
+        this.colour = occupier.getColour();
     }
     /**
      * Constructor with occupier. 
@@ -31,9 +31,20 @@ public class Tile {
     }
 
     public boolean isOccupied() {
-        return false;
+        return occupier != null;
     }
     public Piece getPiece() {
         return occupier;
+    }
+
+    @Override 
+    public String toString() {
+        if (isOccupied()) {
+            return (occupier.getColour() == Colour.WHITE) ? occupier.toString().toLowerCase() :
+            occupier.toString();
+        } else {
+            return " ";
+        }
+
     }
 }
