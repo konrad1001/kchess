@@ -1,6 +1,7 @@
 package Board;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,60 @@ import Pieces.*;
 public class Board {
 
     private final List<Tile> tileBoard;
+    private final Collection<Piece> whitePieces;
+    private final Collection<Piece> blackPieces;
     
     private Board(Builder builder) {
         this.tileBoard = tileBoard(builder);
+        this.whitePieces = getActivePieces(this.tileBoard, Colour.WHITE);
+        this.blackPieces = getActivePieces(this.tileBoard, Colour.BLACK);
+
+        final Collection<Move> whitesLegalMoves = calculateLegalMoves(this.whitePieces);
+        final Collection<Move> blacksLegalMoves = calculateLegalMoves(this.blackPieces);
+        
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+
+        for (int i=0; i < BoardTools.NUM_TILES; i++) {
+            Tile T = this.tileBoard.get(i);
+            final String asString = T.toString();
+            builder.append(asString);
+            if ((i+1) % BoardTools.ROW_LENGTH == 0) {
+                builder.append("\n");
+            }
+        }
+
+        return builder.toString();
+
+    }
+    private Collection<Move> calculateLegalMoves(Collection<Piece> pieces) {
+        
+        final List<Move> legalMoves = new ArrayList<>();
+
+        for (final Piece piece : pieces) {
+            legalMoves.addAll(piece.calculateLegalMoves(this));
+        }
+        
+        return Collections.unmodifiableList(legalMoves);
+    }
+
+    private static Collection<Piece> getActivePieces(final List<Tile> tileBoard, final Colour colour) {
+        
+        final List<Piece> activePieces = new ArrayList<>();
+
+        for (final Tile T : tileBoard) {
+            if (T.isOccupied()) {
+                final Piece piece = T.getPiece();
+                if (piece.getColour() == colour) {
+                    activePieces.add(piece);
+                }
+            }
+        }
+        
+        return Collections.unmodifiableList(activePieces);
     }
 
     /**
@@ -68,7 +120,8 @@ public class Board {
         return builder.build();
     }
 
-    public Tile getTile(int coordinate) { return null;}
+    public Tile getTile(int coordinate) { 
+        return tileBoard.get(coordinate);}
 
     public static class Builder {
         Map<Integer, Piece> boardConfig;
