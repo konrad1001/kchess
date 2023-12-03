@@ -1,6 +1,7 @@
 package Board;
 
 import Pieces.Piece;
+import util.Colour;
 
 public class Move {
     
@@ -17,6 +18,7 @@ public class Move {
         this.destination = 0;
         this.isCapturing = false;
     }
+
     public Move(final Board board, final Piece movedPiece,
         final int destination, final boolean isCapturing) {
             this.board = board;
@@ -34,4 +36,15 @@ public class Move {
             this.destination = destination;
             this.isCapturing = isCapturing;
         }
+    
+        @Override
+        public String toString() {
+            Colour player = movedPiece.getColour();
+            int position = movedPiece.getCoordinates();
+
+            return player + " moves " + movedPiece + " from " +
+                     String.valueOf(position) + " to " + String.valueOf(destination);
+        }
+
 }
+

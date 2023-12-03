@@ -17,7 +17,12 @@ public class Tile {
     public Tile(int coordinates, Piece occupier) {
         this.coordinates = coordinates; 
         this.occupier = occupier;
-        this.colour = occupier.getColour();
+        if (occupier != null) {
+            this.colour = occupier.getColour();
+        } else {
+            this.colour = null;
+        }
+        
     }
     /**
      * Constructor with occupier. 
@@ -43,7 +48,7 @@ public class Tile {
             return (occupier.getColour() == Colour.WHITE) ? occupier.toString().toLowerCase() :
             occupier.toString();
         } else {
-            return " ";
+            return "-";
         }
 
     }

@@ -3,6 +3,7 @@ package Board;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,11 +47,10 @@ public class Board {
     private Collection<Move> calculateLegalMoves(Collection<Piece> pieces) {
         
         final List<Move> legalMoves = new ArrayList<>();
-
+       
         for (final Piece piece : pieces) {
             legalMoves.addAll(piece.calculateLegalMoves(this));
         }
-        
         return Collections.unmodifiableList(legalMoves);
     }
 
@@ -78,8 +78,10 @@ public class Board {
     private List<Tile> tileBoard(Builder builder) {
         final List<Tile> tiles = new ArrayList<>(BoardTools.NUM_TILES);
         for (int i = 0; i < BoardTools.NUM_TILES; i++) {
+            
             tiles.add(new Tile(i, builder.boardConfig.get(i)));
         }
+
         return Collections.unmodifiableList(tiles);
     }
 
@@ -127,7 +129,9 @@ public class Board {
         Map<Integer, Piece> boardConfig;
         Colour currentPlayer;
 
-        public Builder() {}
+        public Builder() {
+            this.boardConfig = new HashMap<>();
+        }
 
         public Builder set(final Piece piece) {
             boardConfig.put(piece.getCoordinates(), piece);
