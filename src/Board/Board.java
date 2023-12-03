@@ -11,20 +11,34 @@ import util.BoardTools;
 import util.Colour;
 
 import Pieces.*;
+import Player.Player;
+
 
 public class Board {
 
     private final List<Tile> tileBoard;
     private final Collection<Piece> whitePieces;
     private final Collection<Piece> blackPieces;
+
+    private final Player whitePlayer;
+    private final Player blackPlayer;
     
     private Board(Builder builder) {
         this.tileBoard = tileBoard(builder);
         this.whitePieces = getActivePieces(this.tileBoard, Colour.WHITE);
         this.blackPieces = getActivePieces(this.tileBoard, Colour.BLACK);
 
-        final Collection<Move> whitesLegalMoves = calculateLegalMoves(this.whitePieces);
-        final Collection<Move> blacksLegalMoves = calculateLegalMoves(this.blackPieces);
+        final Collection<Move> whiteLegalMoves = calculateLegalMoves(this.whitePieces);
+        final Collection<Move> blackLegalMoves = calculateLegalMoves(this.blackPieces);
+
+        final Collection<Move> allLegalMoves = new ArrayList<>(whiteLegalMoves);
+        allLegalMoves.addAll(blackLegalMoves);
+
+        whitePlayer = new Player(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
+        blackPlayer = new Player(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK);
+
+        
+
         
     }
 
@@ -123,7 +137,33 @@ public class Board {
     }
 
     public Tile getTile(int coordinate) { 
-        return tileBoard.get(coordinate);}
+        return tileBoard.get(coordinate);
+    }
+    public Piece getPiece(String name, Colour colour) {
+        if (colour == Colour.WHITE) {
+            for (Piece piece : whitePieces) {
+                if (piece.toString() == name) {
+                    return piece;
+                }
+            }
+        } else {
+            for (Piece piece : blackPieces) {
+                if (piece.toString() == name) {
+                    return piece;
+                }
+            }
+        }
+        System.out.println("No active piece found with name '" + name + "'");
+        return null;
+    }
+    public Player getPlayer(Colour colour) {
+        if (colour == Colour.WHITE) {
+            return whitePlayer;
+        } else {
+            return blackPlayer;
+        }
+    }
+
 
     public static class Builder {
         Map<Integer, Piece> boardConfig;
