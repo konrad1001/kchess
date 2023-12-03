@@ -21,13 +21,38 @@ public abstract class Piece {
         this.colour = colour;
         this.isFirstMove = true;
     }
-    public Colour getColor() {
+    public Colour getColour() {
         return colour;
     }
     protected boolean isFirstMove() {
         return isFirstMove;
     }
+    
+    public int getCoordinates() {
+        return coordinates;
+    }
 
     public abstract List<Move> calculateLegalMoves(final Board board);
+
+    public enum Name {
+        PAWN("P"),
+        ROOK("R"),
+        KNIGHT("N"),
+        BISHOP("B"),
+        QUEEN("Q"),
+        KING("K");
+
+        private String Name;
+
+        Name(final String pieceName) {
+            this.Name = pieceName;
+        }
+
+        @Override
+        public String toString() {
+            return this.Name;
+        }
+
+    }
 
 }

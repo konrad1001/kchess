@@ -40,7 +40,7 @@ public class Bishop extends Piece{
                         LegalMoves.add(new Move(board, this, destination, false));
                     } else {
                         final Piece targetPiece = targetTile.getPiece();
-                        if (targetPiece.getColor() != this.colour) {
+                        if (targetPiece.getColour() != this.colour) {
                             LegalMoves.add(new Move(board, this, targetPiece, destination, true));
                         }
                         break;
@@ -58,5 +58,10 @@ public class Bishop extends Piece{
     }
     private static boolean isEigthColumnExclusion(int current, int offset) {
         return BoardTools.EIGTH_COLUMN[current] && ((offset == 9) || (offset == -7));
+    }
+
+    @Override
+    public String toString() {
+        return Name.BISHOP.toString();
     }
 }

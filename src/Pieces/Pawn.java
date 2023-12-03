@@ -23,7 +23,7 @@ public class Pawn extends Piece{
         LegalMoves = new ArrayList<>();
 
         for (final int currentVector : POSSIBLE_MOVES_VECTORS) {
-            int destination = this.coordinates + this.getColor().getDirection() * currentVector;
+            int destination = this.coordinates + this.getColour().getDirection() * currentVector;
 
             if (!BoardTools.isValid(destination)) {
                 continue;
@@ -50,7 +50,7 @@ public class Pawn extends Piece{
                          (BoardTools.FIRST_COLUMN[this.coordinates] && this.colour == Colour.BLACK)) ) {
                 if (targetTile.isOccupied()) {
                     final Piece targetPiece = targetTile.getPiece();
-                        if (targetPiece.getColor() != this.colour) {
+                        if (targetPiece.getColour() != this.colour) {
                             //catch promotion
                             LegalMoves.add(new Move(board, this, targetPiece, destination, true));
                         }
@@ -61,7 +61,7 @@ public class Pawn extends Piece{
                          (BoardTools.EIGTH_COLUMN[this.coordinates] && this.colour == Colour.BLACK)) ) {
                 if (targetTile.isOccupied()) {
                     final Piece targetPiece = targetTile.getPiece();
-                        if (targetPiece.getColor() != this.colour) {
+                        if (targetPiece.getColour() != this.colour) {
                             //catch promotion
                             LegalMoves.add(new Move(board, this, targetPiece, destination, true));
                         }
@@ -73,6 +73,10 @@ public class Pawn extends Piece{
         return LegalMoves;
     }
 
+    @Override
+    public String toString() {
+        return Name.PAWN.toString();
+    }
 
     
 }

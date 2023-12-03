@@ -41,7 +41,7 @@ public class Knight extends Piece{
                     LegalMoves.add(new Move(board, this, destination, false));
                 } else {
                     final Piece targetPiece = targetTile.getPiece();
-                    if (targetPiece.getColor() != this.colour) {
+                    if (targetPiece.getColour() != this.colour) {
                         LegalMoves.add(new Move(board, this, targetPiece, destination, true));
 
                     }
@@ -67,4 +67,10 @@ public class Knight extends Piece{
     private static boolean isEigthColumnExclusion(int current, int offset) {
         return BoardTools.EIGTH_COLUMN[current] && ((offset == 10) || (offset == -6));  
     }
+    @Override
+    public String toString() {
+        return Name.KNIGHT.toString();
+    }
 }
+
+
