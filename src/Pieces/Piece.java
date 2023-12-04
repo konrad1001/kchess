@@ -32,6 +32,10 @@ public abstract class Piece {
         return coordinates;
     }
 
+    public String getPieceDetails() {
+        return colour + " " + this + " at " + String.valueOf(coordinates);
+    }
+
     public abstract List<Move> calculateLegalMoves(final Board board);
 
     public enum Name {
