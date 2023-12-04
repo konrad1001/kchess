@@ -9,6 +9,7 @@ import javax.management.RuntimeErrorException;
 
 import Board.Board;
 import Board.Move;
+import Board.MoveStatus;
 import Board.MoveTransition;
 import Pieces.King;
 import Pieces.Piece;
@@ -56,10 +57,6 @@ public class Player {
         return Collections.unmodifiableList(attackMoves);
     }
 
-    public MoveTransition makeMove(final Move move) {
-        return null;
-    }
-
     public Player getOpponent() {
         if (colour == Colour.WHITE) {
             return board.getPlayer(Colour.BLACK);
@@ -67,6 +64,15 @@ public class Player {
             return board.getPlayer(Colour.WHITE);
         }
     }
+
+    public King getKing() {
+        return king;
+    }
+
+    public Collection<Move> getLegalMoves() {
+        return ourLegalMoves;
+    }
+
     public boolean isMoveLegal(final Move move) {
         return ourLegalMoves.contains(move);
         
@@ -93,6 +99,28 @@ public class Player {
     }
     public boolean isCastled() {
         return false;
+    }
+
+    public MoveTransition makeMove(final Move move) {
+        if (!isMoveLegal(move)) {
+            //If move is illegal, return same board.
+            return new MoveTransition(board, move, MoveStatus.ILLEGAL_MOVE);
+        }
+
+        //Execute move.
+        final Board newBoard = move.execute();
+        
+        //Get our king in this new board state
+        King k = newBoard.getCurrentPlayer().getOpponent().getKing();
+
+        //Now check if the resulting board states leaves us in check. 
+        final Collection<Move> attacksOnKing = Player.calculateAttacks(
+                                        k, newBoard.getCurrentPlayer().getLegalMoves());
+        if (!attacksOnKing.isEmpty()) {
+            return new MoveTransition(this.board, move, MoveStatus.LEAVES_PLAYER_IN_CHECK);
+        }
+
+        return new MoveTransition(newBoard, move, MoveStatus.DONE);
     }
 
 }

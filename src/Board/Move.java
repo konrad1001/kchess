@@ -46,5 +46,13 @@ public class Move {
                      String.valueOf(position) + " to " + String.valueOf(destination);
         }
 
+        public int getDestinationCoordinates() {
+            return destination;
+        }
+
+        public Board execute() {
+            return null;
+        }
+
 }
 
