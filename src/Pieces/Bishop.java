@@ -3,6 +3,8 @@ package Pieces;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.BadStringOperationException;
+
 import Board.Board;
 import Board.Move;
 import Board.Tile;
@@ -64,5 +66,10 @@ public class Bishop extends Piece{
     @Override
     public String toString() {
         return Name.BISHOP.toString();
+    }
+
+    @Override
+    public Piece movePiece(Move move) {
+        return new Bishop(move.getDestinationCoordinates(), move.getMoveColour());
     }
 }

@@ -27,6 +27,8 @@ public abstract class Piece {
     protected boolean isFirstMove() {
         return isFirstMove;
     }
+
+    public abstract Piece movePiece(Move move);
     
     public int getCoordinates() {
         return coordinates;
