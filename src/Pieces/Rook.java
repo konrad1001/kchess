@@ -14,7 +14,7 @@ public class Rook extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {8, -8, 1, -1};
 
     public Rook(int coordinates, Colour colour) {
-        super(coordinates, colour);
+        super(coordinates, colour, Name.ROOK);
     }
     
     @Override

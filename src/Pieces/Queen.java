@@ -14,7 +14,7 @@ public class Queen extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {8, -8, 1, -1, -9, -7, 7, 9};
 
     public Queen(int coordinates, Colour colour) {
-        super(coordinates, colour);
+        super(coordinates, colour, Name.QUEEN);
     }
     
     @Override

@@ -14,7 +14,7 @@ public class Pawn extends Piece{
     private final static int[] POSSIBLE_MOVES_VECTORS = {7, 8, 9, 16};
 
     public Pawn(int coordinates, Colour colour) {
-        super(coordinates, colour);
+        super(coordinates, colour, Name.PAWN);
     }
 
     @Override

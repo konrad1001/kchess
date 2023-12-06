@@ -14,7 +14,7 @@ public class King extends Piece{
     private final static int[] POSSIBLE_MOVES_VECTORS = {-9, -8, -7, -1, 1, 7, 8, 9};
 
     public King(int coordinates, Colour colour) {
-        super(coordinates, colour);
+        super(coordinates, colour, Name.KING);
     }
 
     @Override
