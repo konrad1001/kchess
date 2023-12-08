@@ -37,7 +37,7 @@ public abstract class Piece {
     public Colour getColour() {
         return colour;
     }
-    protected boolean isFirstMove() {
+    public boolean isFirstMove() {
         return isFirstMove;
     }
 

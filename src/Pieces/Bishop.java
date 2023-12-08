@@ -7,6 +7,7 @@ import javax.management.BadStringOperationException;
 
 import Board.Board;
 import Board.Move;
+import Board.MoveType;
 import Board.Tile;
 import util.BoardTools;
 import util.Colour;
@@ -16,7 +17,7 @@ public class Bishop extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {-9, -7, 7, 9};
 
     public Bishop(int coordinates, Colour colour) {
-        super(coordinates, colour);
+        super(coordinates, colour, Name.BISHOP);
     }
     
     @Override
@@ -40,11 +41,11 @@ public class Bishop extends Piece{
                 if (BoardTools.isValid(destination)) {
                     final Tile targetTile = board.getTile(destination);
                     if (targetTile.isOccupied() == false) {
-                        LegalMoves.add(new Move(board, this, destination, false));
+                        LegalMoves.add(new Move(board, this, destination, MoveType.STANDARD));
                     } else {
                         final Piece targetPiece = targetTile.getPiece();
                         if (targetPiece.getColour() != this.colour) {
-                            LegalMoves.add(new Move(board, this, targetPiece, destination, true));
+                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.ATTACK));
                         }
                         break;
                     }

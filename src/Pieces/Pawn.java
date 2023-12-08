@@ -5,6 +5,7 @@ import java.util.List;
 
 import Board.Board;
 import Board.Move;
+import Board.MoveType;
 import Board.Tile;
 import util.BoardTools;
 import util.Colour;
@@ -33,7 +34,7 @@ public class Pawn extends Piece{
             
             //regular one space pawn move
             if (currentVector == 8 && !board.getTile(destination).isOccupied()) {
-                LegalMoves.add(new Move(board, this, destination, false));  
+                LegalMoves.add(new Move(board, this, destination, MoveType.PAWN_MOVE));  
             
             //double move when first move is true and pawn is in starting row for respective colour.
             } else if (currentVector == 16 && this.isFirstMove() && 
@@ -42,7 +43,7 @@ public class Pawn extends Piece{
                 final int coordinateInfront = this.coordinates + (this.colour.getDirection() * 8);
                 if (!board.getTile(coordinateInfront).isOccupied() && 
                     targetTile.isOccupied()) {
-                        LegalMoves.add(new Move(board, this, destination, false));
+                        LegalMoves.add(new Move(board, this, destination, MoveType.PAWN_JUMP));
                     }
 
             } else if (currentVector == 7 &&
@@ -52,7 +53,7 @@ public class Pawn extends Piece{
                     final Piece targetPiece = targetTile.getPiece();
                         if (targetPiece.getColour() != this.colour) {
                             //catch promotion
-                            LegalMoves.add(new Move(board, this, targetPiece, destination, true));
+                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.NULL));
                         }
                         break;
                 }
@@ -63,7 +64,7 @@ public class Pawn extends Piece{
                     final Piece targetPiece = targetTile.getPiece();
                         if (targetPiece.getColour() != this.colour) {
                             //catch promotion
-                            LegalMoves.add(new Move(board, this, targetPiece, destination, true));
+                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.NULL));
                         }
                         break;
                     }
