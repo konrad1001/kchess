@@ -22,8 +22,9 @@ public class Board {
 
     private final Player whitePlayer;
     private final Player blackPlayer;
+    private final Player currentPlayer;
     
-    private Board(Builder builder) {
+    private Board(final Builder builder) {
         this.tileBoard = tileBoard(builder);
         this.whitePieces = getActivePieces(this.tileBoard, Colour.WHITE);
         this.blackPieces = getActivePieces(this.tileBoard, Colour.BLACK);
@@ -36,7 +37,7 @@ public class Board {
 
         whitePlayer = new Player(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
         blackPlayer = new Player(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK);
-
+        currentPlayer = builder.currentPlayer.choosePlayer(whitePlayer, blackPlayer);
         
 
         
@@ -139,6 +140,9 @@ public class Board {
     public Tile getTile(int coordinate) { 
         return tileBoard.get(coordinate);
     }
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
     public Piece getPiece(String name, Colour colour) {
         if (colour == Colour.WHITE) {
             for (Piece piece : whitePieces) {
@@ -156,6 +160,13 @@ public class Board {
         System.out.println("No active piece found with name '" + name + "'");
         return null;
     }
+    public Collection<Piece> getPieces(Colour colour) {
+        if (colour == Colour.WHITE) {
+            return whitePieces;
+        } else {
+            return blackPieces;
+        }
+    }
     public Player getPlayer(Colour colour) {
         if (colour == Colour.WHITE) {
             return whitePlayer;
@@ -168,6 +179,8 @@ public class Board {
     public static class Builder {
         Map<Integer, Piece> boardConfig;
         Colour currentPlayer;
+        private Pawn enPassantPawn;
+
 
         public Builder() {
             this.boardConfig = new HashMap<>();
@@ -181,8 +194,13 @@ public class Board {
             this.currentPlayer = colour;
             return this;
         }
+    
         public Board build() {
             return new Board(this);
+        }
+
+        public void setEnPassantPawn(Pawn pawn) {
+            this.enPassantPawn = pawn;
         }
     }
 }
