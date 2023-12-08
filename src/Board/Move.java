@@ -21,7 +21,7 @@ public class Move {
         this.movedPiece = null;
         this.interactedPiece = null;
         this.destination = 0;
-        this.interactedPieceDestination; = 0;
+        this.interactedPieceDestination = 0;
         this.colour = null;
         this.moveType = MoveType.NULL;
     }
