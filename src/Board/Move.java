@@ -3,6 +3,7 @@ package Board;
 import Board.Board.Builder;
 import Pieces.Pawn;
 import Pieces.Piece;
+import Pieces.Rook;
 import util.Colour;
 
 public class Move {
@@ -10,15 +11,17 @@ public class Move {
     private final Board board;  //this board
     private final Piece movedPiece; //the piece to be moved
     private final int destination; //moving to this coordinate
-    private final Piece attackedPiece;
+    private final Piece interactedPiece; //if another piece is involved
+    private final int interactedPieceDestination;
     private final Colour colour; //what colour is making this move.
     private final MoveType moveType;
 
     public Move() {
         this.board = null;
         this.movedPiece = null;
-        this.attackedPiece = null;
+        this.interactedPiece = null;
         this.destination = 0;
+        this.interactedPieceDestination; = 0;
         this.colour = null;
         this.moveType = MoveType.NULL;
     }
@@ -28,16 +31,29 @@ public class Move {
             this.board = board;
             this.movedPiece = movedPiece;
             this.destination = destination;
+            this.interactedPieceDestination = 0;
             this.moveType = moveType;
-            this.attackedPiece = null;
+            this.interactedPiece = null;
             this.colour = movedPiece.getColour();
         }
     public Move(final Board board, final Piece movedPiece,
-        final Piece attackedPiece,
+        final Piece interactedPiece,
         final int destination, final MoveType moveType) {
             this.board = board;
             this.movedPiece = movedPiece;
-            this.attackedPiece = attackedPiece;
+            this.interactedPiece = interactedPiece;
+            this.interactedPieceDestination = 0;
+            this.destination = destination;
+            this.colour = movedPiece.getColour();
+            this.moveType = moveType;
+        }
+    public Move(final Board board, final Piece movedPiece,
+        final Piece interactedPiece, final int destination, 
+        final int interactedPieceDestination, final MoveType moveType) {
+            this.board = board;
+            this.movedPiece = movedPiece;
+            this.interactedPiece = interactedPiece;
+            this.interactedPieceDestination = interactedPieceDestination;
             this.destination = destination;
             this.colour = movedPiece.getColour();
             this.moveType = moveType;
@@ -60,7 +76,7 @@ public class Move {
             result = prime * result + this.destination;
             result = prime * result + this.movedPiece.hashCode();
             if (moveType == MoveType.ATTACK) {
-                result = result + attackedPiece.hashCode();
+                result = result + interactedPiece.hashCode();
             }
             return result;
         }
@@ -93,8 +109,8 @@ public class Move {
         public MoveType getType() {
             return moveType;
         }
-        public Piece getAttackedPiece() {
-            return attackedPiece;
+        public Piece getinteractedPiece() {
+            return interactedPiece;
         }
         public Piece getMovedPiece() {
             return movedPiece;
@@ -106,7 +122,7 @@ public class Move {
             switch (moveType) {
                 case STANDARD:
                     for (final Piece piece : board.getPieces(colour)) {
-                        if(!this.movedPiece.equals(piece)) {
+                        if(!movedPiece.equals(piece)) {
                             builder.set(piece);
                         }
                     }
@@ -122,9 +138,9 @@ public class Move {
                             builder.set(piece);
                         }
                     }
-                    //set all of their unmoved unless it is attacked.
+                    //set all of their unmoved unless it is interacted.
                     for (final Piece piece : board.getPieces(colour.Opposite())) {
-                        if(!this.attackedPiece.equals(piece)) {
+                        if(!this.interactedPiece.equals(piece)) {
                             builder.set(piece);
                         }
                     }
@@ -150,6 +166,19 @@ public class Move {
                     break;
                 case PAWN_MOVE:
                     break;
+                case CASTLE: 
+                    final Rook castleRook = (Rook) interactedPiece;
+                    for (final Piece piece : board.getPieces(colour)) {
+                        if(!movedPiece.equals(piece) && !castleRook.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    //set all of their unmoved.
+                    for (final Piece piece : board.getPieces(colour.Opposite())) {                       
+                        builder.set(piece);
+                    }
+                    builder.set(movedPiece.movePiece(this));
+                    builder.set(new Rook(interactedPieceDestination, colour));
                 default:
                     break;
                 

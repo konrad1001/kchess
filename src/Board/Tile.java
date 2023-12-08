@@ -6,10 +6,17 @@ import util.Colour;
 public class Tile {
 
     private final int coordinates;
+    
+
     private final Piece occupier;
     private final Colour colour;
 
-
+    public Colour getColour() {
+        return colour;
+    }
+    public int getCoordinates() {
+        return coordinates;
+    }
     /**
      * Constructor with no occupier.
      * @param coordinates
