@@ -73,6 +73,8 @@ public class Table {
     private class TilePanel extends JPanel {
         private static final Dimension TILE_PANEL_DIMENSION = new Dimension(10, 10);
         private final int tileID;
+        private final Color lightTileColour = Color.decode("#F0D9B7");
+        private final Color darkTileColour = Color.decode("#B48866");
 
         TilePanel(final BoardPanel boardPanel, final int tileID) {
             super(new GridBagLayout());
@@ -83,6 +85,10 @@ public class Table {
         }
 
         private void assignTileColour() {
+            
+            boolean isLightTile = ((tileID + tileID / 8) % 2 == 0);
+
+            setBackground(isLightTile ? lightTileColour : darkTileColour);
         }
     }
 
