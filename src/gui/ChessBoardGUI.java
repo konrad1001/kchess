@@ -11,6 +11,8 @@ import util.Colour;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -97,8 +99,8 @@ public class ChessBoardGUI {
         private static final Dimension TILE_PANEL_DIMENSION = new Dimension(10, 10);
         private static final Dimension ICON_DIMENSIONS = new Dimension(5, 5);
         private final int tileID;
-        private final Color lightTileColour = Color.decode("#F0D9B7");
-        private final Color darkTileColour = Color.decode("#B48866");
+        private final Color lightTileColour = Color.decode("#BDCFEA");
+        private final Color darkTileColour = Color.decode("#6E91AC");
 
         private final Board board;
 
@@ -109,6 +111,42 @@ public class ChessBoardGUI {
             setPreferredSize(TILE_PANEL_DIMENSION);
             assignTileColour();
             assignTilePieceIcon(board);
+
+            addMouseListener(new MouseListener() {
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    
+                    
+
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'mousePressed'");
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'mouseReleased'");
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'mouseEntered'");
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'mouseExited'");
+                }
+                
+            });
+
             validate();
         }
 
