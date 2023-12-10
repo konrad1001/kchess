@@ -2,8 +2,13 @@ package gui;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import static javax.swing.SwingUtilities.*;
 
 import Board.Board;
+import Board.Move;
+import Board.MoveStatus;
+import Board.MoveTransition;
+import Board.Tile;
 import Pieces.Piece;
 import util.BoardTools;
 import util.Colour;
@@ -27,7 +32,12 @@ public class ChessBoardGUI {
 
     private static final Dimension FRAME_DIMENSIONS = new Dimension(600,600);
 
-    private final Board chessBoard;
+    private Board chessBoard;
+
+    private Tile sourceTile;
+    private Tile destinationTile;
+
+    private Piece playerMovedPiece;
 
     public ChessBoardGUI(final Board board) {
         this.chessBoard = board;
@@ -79,19 +89,29 @@ public class ChessBoardGUI {
     private class BoardPanel extends JPanel {
         private static final Dimension BOARD_PANEL_DIMENSIONS = new Dimension(400, 350);
         final List<TilePanel> boardTiles; 
-        final Board board;
+     //   final Board board;
 
         BoardPanel(final Board board) {
             super(new GridLayout(8, 8));
             this.boardTiles = new ArrayList<>();
-            this.board = board;
+        //    this.board = board;
             for(int i=0; i<BoardTools.NUM_TILES; i++) {
-                final TilePanel tilePanel = new TilePanel(this, board, i);
+                final TilePanel tilePanel = new TilePanel(this, i);
                 boardTiles.add(tilePanel);
                 add(tilePanel);
             }
             setPreferredSize(BOARD_PANEL_DIMENSIONS);
             validate();
+        }
+
+        public void drawBoard() {
+            removeAll();
+            for (final TilePanel tile : boardTiles) {
+                tile.drawTile();
+                add(tile);
+            }
+            validate();
+            repaint();
         }
     }
 
@@ -102,47 +122,75 @@ public class ChessBoardGUI {
         private final Color lightTileColour = Color.decode("#BDCFEA");
         private final Color darkTileColour = Color.decode("#6E91AC");
 
-        private final Board board;
 
-        TilePanel(final BoardPanel boardPanel, final Board board, final int tileID) {
+        TilePanel(final BoardPanel boardPanel, final int tileID) {
             super(new GridBagLayout());
             this.tileID = tileID;
-            this.board = board;
             setPreferredSize(TILE_PANEL_DIMENSION);
             assignTileColour();
-            assignTilePieceIcon(board);
+            assignTilePieceIcon();
 
             addMouseListener(new MouseListener() {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    
+                    if(isRightMouseButton(e)) {
+                        //right click will clear
+                        sourceTile = null;
+                        destinationTile = null;
+                        playerMovedPiece = null;
+                    } else if (isLeftMouseButton(e)) {
+                        System.out.println();
+                        if(sourceTile == null) {
+                            sourceTile = chessBoard.getTile(tileID);
+                            playerMovedPiece = sourceTile.getPiece();
+                            if (playerMovedPiece == null) {
+                                sourceTile = null;
+                            }
+                          //  System.out.println(playerMovedPiece);
+                        } else {
+                            destinationTile = chessBoard.getTile(tileID);
+                            
+                            System.out.println(destinationTile);
+                            System.out.println(playerMovedPiece);
+                            
+                            final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
+                            System.out.println(move);
+                            final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
+                            if (transition.getMoveStatus() == MoveStatus.DONE) {
+                                chessBoard = transition.getBoard();
+                            }
+                            sourceTile = null;
+                            destinationTile = null;
+                            playerMovedPiece = null;
+                        }
+                        SwingUtilities.invokeLater(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                boardPanel.drawBoard();
+                            }
+
+                        });
+                    }
                     
 
                 }
 
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'mousePressed'");
                 }
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'mouseReleased'");
                 }
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'mouseEntered'");
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'mouseExited'");
                 }
                 
             });
@@ -150,11 +198,17 @@ public class ChessBoardGUI {
             validate();
         }
 
-        private void assignTilePieceIcon(final Board board) {
+        public void drawTile() {
+            assignTileColour();
+            assignTilePieceIcon();
+            validate();
+        }
+
+        private void assignTilePieceIcon() {
             //redraw
             removeAll();
-            if(board.getTile(tileID).isOccupied()) {
-                final Piece pieceOnTile = board.getTile(tileID).getPiece();
+            if(chessBoard.getTile(tileID).isOccupied()) {
+                final Piece pieceOnTile = chessBoard.getTile(tileID).getPiece();
                 
                 try {
                     final BufferedImage image = ImageIO.read(new File(getPiecePath(pieceOnTile)));
