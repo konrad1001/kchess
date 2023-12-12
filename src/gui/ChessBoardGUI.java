@@ -22,6 +22,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ChessBoardGUI {
@@ -39,10 +41,15 @@ public class ChessBoardGUI {
 
     private Piece playerMovedPiece;
 
+    private BoardDirection boardDirection;
+
+    private Boolean holdingPiece;
+
     
 
     public ChessBoardGUI(final Board board) {
         this.chessBoard = board;
+        this.boardDirection = BoardDirection.NORMAL;
         gameFrame = new JFrame("kChess");
         gameFrame.setLayout(new BorderLayout());
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,7 +68,22 @@ public class ChessBoardGUI {
     private JMenuBar createMenuBar() {
         final JMenuBar tableMenuBar = new JMenuBar();
         tableMenuBar.add(createFileMenu());
+        tableMenuBar.add(createPreferencesMenu());
         return tableMenuBar;
+    }
+
+    private JMenu createPreferencesMenu() {
+        final JMenu preferencesMenu = new JMenu("Preferences");
+        final JMenuItem flipBoardMenuItem = new JMenuItem("Flip Board");
+        flipBoardMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boardDirection = boardDirection.opposite();
+                boardPanel.drawBoard();
+            }
+        });
+        preferencesMenu.add(flipBoardMenuItem);
+        return preferencesMenu;
     }
 
     private JMenu createFileMenu() {
@@ -108,9 +130,11 @@ public class ChessBoardGUI {
 
         public void drawBoard() {
             removeAll();
-            for (final TilePanel tile : boardTiles) {
+            for (final TilePanel tile : boardDirection.traverse(boardTiles)) {
+                
                 tile.drawTile();
                 add(tile);
+                tile.deselect();
             }
             validate();
             repaint();
@@ -123,13 +147,19 @@ public class ChessBoardGUI {
         private final int tileID;
         private final Color lightTileColour = Color.decode("#BDCFEA");
         private final Color darkTileColour = Color.decode("#6E91AC");
-        private Boolean holdingPiece;
+        private final Color selectedLightTileColour = Color.decode("#EAD8BD");
+        private final Color selectedDarkTileColour = Color.decode("#AC896E");
+        
+        private final Boolean isLightTile;
+        private Boolean isSelected;
 
         
 
         TilePanel(final BoardPanel boardPanel, final int tileID) {
             super(new GridBagLayout());
             this.tileID = tileID;
+            this.isLightTile = ((tileID + tileID / 8) % 2 == 0);
+            this.isSelected = false;
             setPreferredSize(TILE_PANEL_DIMENSION);
             assignTileColour();
             assignTilePieceIcon();
@@ -143,22 +173,28 @@ public class ChessBoardGUI {
                         sourceTile = null;
                         destinationTile = null;
                         playerMovedPiece = null;
+                        isSelected = false;
                     } else if (isLeftMouseButton(e)) {
+                        
                         //left click will select
+                        isSelected = true;
                         if (sourceTile == null) { //if we have nothing selected
                             sourceTile = chessBoard.getTile(tileID);
                             playerMovedPiece = sourceTile.getPiece();
                             if (playerMovedPiece == null) {
                                 sourceTile = null;
+                                isSelected = false;
                             }
                         } else { //we have something already selected, next selection will be a destination tile
                             destinationTile = chessBoard.getTile(tileID);
+                            isSelected = false;
                             if (destinationTile.isOccupied()) {//if we have selected our own colour, reselect.
                                 if (destinationTile.getPiece().getColour() == playerMovedPiece.getColour()) {
                                     sourceTile = chessBoard.getTile(tileID);
                                     playerMovedPiece = sourceTile.getPiece();
                                     if (playerMovedPiece == null) {
                                         sourceTile = null;
+                                        isSelected = false;
                                     }
                                 } else {
                                     final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
@@ -218,9 +254,41 @@ public class ChessBoardGUI {
             validate();
         }
 
+        public void deselect() {
+            isSelected = false;
+        }
+
+        private void drawLegalMoves(final Board board) {
+            if (isSelected) {
+                if (isLightTile) {
+                    setBackground(selectedLightTileColour);
+                } else {
+                    setBackground(selectedDarkTileColour);
+                }
+            } 
+            for (final Move move : pieceLegalMoves(board)) {
+                if (move.getDestinationCoordinates() == this.tileID) {
+                    if (isLightTile) {
+                        setBackground(selectedLightTileColour);
+                    } else {
+                        setBackground(selectedDarkTileColour);
+                    }
+                }
+            }
+            
+        }
+
+        private Collection<Move> pieceLegalMoves(Board board) {
+            if (playerMovedPiece != null && playerMovedPiece.getColour() == board.getCurrentPlayer().colour()) {
+                return playerMovedPiece.calculateLegalMoves(board);
+            }
+            return Collections.emptyList();
+        }
+
         public void drawTile() {
             assignTileColour();
             assignTilePieceIcon();
+            drawLegalMoves(chessBoard);
             validate();
         }
 
@@ -250,9 +318,43 @@ public class ChessBoardGUI {
 
         private void assignTileColour() {
             
-            boolean isLightTile = ((tileID + tileID / 8) % 2 == 0);
+        //    boolean isLightTile = ((tileID + tileID / 8) % 2 == 0);
 
             setBackground(isLightTile ? lightTileColour : darkTileColour);
+        }
+    }
+
+    public enum BoardDirection {
+        NORMAL {
+            @Override
+            List<TilePanel> traverse(final List<TilePanel> boardTiles) {
+                return boardTiles;
+            }
+
+            @Override
+            BoardDirection opposite() {
+                return FLIPPED;
+            }
+        },
+        FLIPPED {
+            @Override
+            List<TilePanel> traverse(final List<TilePanel> boardTiles) {
+                return reverse(boardTiles);
+            }
+
+            @Override
+            BoardDirection opposite() {
+                return NORMAL;
+            }
+        };
+
+        abstract List<TilePanel> traverse(final List<TilePanel> boardTiles);
+        abstract BoardDirection opposite();
+
+        List<TilePanel> reverse(final List<TilePanel> boardTiles) {
+            List<TilePanel> reversedList = new ArrayList<>(boardTiles);
+            Collections.reverse(reversedList);
+            return reversedList;
         }
     }
 
