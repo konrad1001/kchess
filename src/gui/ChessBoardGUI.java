@@ -39,6 +39,8 @@ public class ChessBoardGUI {
 
     private Piece playerMovedPiece;
 
+    
+
     public ChessBoardGUI(final Board board) {
         this.chessBoard = board;
         gameFrame = new JFrame("kChess");
@@ -121,7 +123,9 @@ public class ChessBoardGUI {
         private final int tileID;
         private final Color lightTileColour = Color.decode("#BDCFEA");
         private final Color darkTileColour = Color.decode("#6E91AC");
+        private Boolean holdingPiece;
 
+        
 
         TilePanel(final BoardPanel boardPanel, final int tileID) {
             super(new GridBagLayout());
@@ -140,30 +144,46 @@ public class ChessBoardGUI {
                         destinationTile = null;
                         playerMovedPiece = null;
                     } else if (isLeftMouseButton(e)) {
-                        System.out.println();
-                        if(sourceTile == null) {
+                        //left click will select
+                        if (sourceTile == null) { //if we have nothing selected
                             sourceTile = chessBoard.getTile(tileID);
                             playerMovedPiece = sourceTile.getPiece();
                             if (playerMovedPiece == null) {
                                 sourceTile = null;
                             }
-                          //  System.out.println(playerMovedPiece);
-                        } else {
+                        } else { //we have something already selected, next selection will be a destination tile
                             destinationTile = chessBoard.getTile(tileID);
-                            
-                            System.out.println(destinationTile);
-                            System.out.println(playerMovedPiece);
-                            
-                            final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
-                            System.out.println(move);
-                            final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
-                            if (transition.getMoveStatus() == MoveStatus.DONE) {
-                                chessBoard = transition.getBoard();
+                            if (destinationTile.isOccupied()) {//if we have selected our own colour, reselect.
+                                if (destinationTile.getPiece().getColour() == playerMovedPiece.getColour()) {
+                                    sourceTile = chessBoard.getTile(tileID);
+                                    playerMovedPiece = sourceTile.getPiece();
+                                    if (playerMovedPiece == null) {
+                                        sourceTile = null;
+                                    }
+                                } else {
+                                    final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
+                                
+                                    final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
+                                    if (transition.getMoveStatus() == MoveStatus.DONE) {
+                                        chessBoard = transition.getBoard();
+                                    }
+                                    sourceTile = null;
+                                    destinationTile = null;
+                                    playerMovedPiece = null;
+                                }
+                            } else {
+                                final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
+                                
+                                final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
+                                if (transition.getMoveStatus() == MoveStatus.DONE) {
+                                    chessBoard = transition.getBoard();
+                                }
+                                sourceTile = null;
+                                destinationTile = null;
+                                playerMovedPiece = null;
                             }
-                            sourceTile = null;
-                            destinationTile = null;
-                            playerMovedPiece = null;
                         }
+                        
                         SwingUtilities.invokeLater(new Runnable() {
 
                             @Override
