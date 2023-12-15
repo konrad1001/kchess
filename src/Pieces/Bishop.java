@@ -17,7 +17,10 @@ public class Bishop extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {-9, -7, 7, 9};
 
     public Bishop(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.BISHOP);
+        super(coordinates, colour, Name.BISHOP, true);
+    }
+    public Bishop(int coordinates, Colour colour, boolean isFirstMove) {
+        super(coordinates, colour, Name.BISHOP, isFirstMove);
     }
     
     @Override
@@ -72,5 +75,9 @@ public class Bishop extends Piece{
     @Override
     public Piece movePiece(Move move) {
         return new Bishop(move.getDestinationCoordinates(), move.getMoveColour());
+    }
+    @Override
+    public int getValue() {
+        return 3;
     }
 }

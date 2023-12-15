@@ -2,6 +2,8 @@ package Pieces;
 
 import java.util.List;
 
+import javax.print.attribute.standard.MediaSize.NA;
+
 import Board.Board;
 import Board.Move;
 import util.Colour;
@@ -20,11 +22,12 @@ public abstract class Piece {
 
     final Name name;
 
-    public Piece(int coordinates, Colour colour, Name name) {
+    public Piece(int coordinates, Colour colour, Name name, final Boolean isFirstMove) {
         this.coordinates = coordinates;
         this.colour = colour;
         this.isFirstMove = true;
         this.name = name;
+        this.isFirstMove = isFirstMove;
         this.myHashCode = calculateHash();
     }
     private int calculateHash() {
@@ -60,19 +63,28 @@ public abstract class Piece {
     }
 
     public abstract Piece movePiece(Move move);
+
+    public abstract int getValue();
     
     public int getCoordinates() {
         return coordinates;
     }
 
     public String getPieceDetails() {
-        return colour + " " + this + " at " + String.valueOf(coordinates);
+        return colour + " " + this + " at " + String.valueOf(coordinates) + " is first move " + isFirstMove;
     }
     public Name getName() {
         return name;
     }
+    public String getFullName() {
+        return name.getFullName();
+    }
 
     public abstract List<Move> calculateLegalMoves(final Board board);
+
+    public List<Move> getLegalMoves() {
+        return LegalMoves;
+    }
 
     public enum Name {
         PAWN("P"),
@@ -83,10 +95,28 @@ public abstract class Piece {
         KING("K");
 
         private String Name;
+        
+
+        public String getFullName() {
+            String FullName;
+            switch (Name) {
+                case "P": FullName = "Pawn"; break;
+                case "R" : FullName = "Rook"; break;
+                case "N" : FullName = "Knight"; break;
+                case "B" : FullName = "Bishop"; break;
+                case "Q" : FullName = "Queen"; break;
+                case "K" : FullName = "King"; break;
+                default : FullName = "Null";
+            }
+            return FullName;
+        }
+
 
         Name(final String pieceName) {
             this.Name = pieceName;
+            
         }
+        
 
         @Override
         public String toString() {

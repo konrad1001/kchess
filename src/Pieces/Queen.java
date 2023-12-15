@@ -15,7 +15,10 @@ public class Queen extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {8, -8, 1, -1, -9, -7, 7, 9};
 
     public Queen(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.QUEEN);
+        super(coordinates, colour, Name.QUEEN, true);
+    }
+    public Queen(int coordinates, Colour colour, boolean isFirstMove) {
+        super(coordinates, colour, Name.QUEEN, isFirstMove);
     }
     
     @Override
@@ -66,5 +69,10 @@ public class Queen extends Piece{
     @Override
     public Piece movePiece(Move move) {
         return new Queen(move.getDestinationCoordinates(), move.getMoveColour());
+    }
+
+    @Override
+    public int getValue() {
+        return 9;
     }
 }

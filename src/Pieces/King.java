@@ -15,7 +15,10 @@ public class King extends Piece{
     private final static int[] POSSIBLE_MOVES_VECTORS = {-9, -8, -7, -1, 1, 7, 8, 9};
 
     public King(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.KING);
+        super(coordinates, colour, Name.KING, true);
+    }
+    public King(int coordinates, Colour colour, boolean isFirstMove) {
+        super(coordinates, colour, Name.KING, isFirstMove);
     }
 
     @Override
@@ -61,5 +64,9 @@ public class King extends Piece{
     @Override
     public Piece movePiece(Move move) {
         return new King(move.getDestinationCoordinates(), move.getMoveColour());
+    }
+    @Override
+    public int getValue() {
+        return 10000;
     }
 }

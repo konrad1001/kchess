@@ -15,7 +15,10 @@ public class Pawn extends Piece{
     private final static int[] POSSIBLE_MOVES_VECTORS = {7, 8, 9, 16};
 
     public Pawn(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.PAWN);
+        super(coordinates, colour, Name.PAWN, true);
+    }
+    public Pawn(int coordinates, Colour colour, boolean isFirstMove) {
+        super(coordinates, colour, Name.PAWN, isFirstMove);
     }
 
     @Override
@@ -24,12 +27,19 @@ public class Pawn extends Piece{
         LegalMoves = new ArrayList<>();
 
         for (final int currentVector : POSSIBLE_MOVES_VECTORS) {
+
+            
+
             int destination = this.coordinates + this.getColour().getDirection() * currentVector;
+
+            System.out.println(this.colour + " Pawn at " + this.coordinates + " is checking vector " + currentVector + " for legal moves.");
+            System.out.println("Checking destination " + destination + " contains " + board.getTile(destination).getPiece() );
 
             if (!BoardTools.isValid(destination)) {
                 continue;
             }
 
+    
             final Tile targetTile = board.getTile(destination);
             
             //regular one space pawn move
@@ -42,10 +52,10 @@ public class Pawn extends Piece{
                         (BoardTools.SEVENTH_ROW[this.coordinates] && this.colour == Colour.WHITE))) {
                 final int coordinateInfront = this.coordinates + (this.colour.getDirection() * 8);
                 if (!board.getTile(coordinateInfront).isOccupied() && 
-                    targetTile.isOccupied()) {
+                    !targetTile.isOccupied()) {
                         LegalMoves.add(new Move(board, this, destination, MoveType.PAWN_JUMP));
                     }
-
+            //pawn attack
             } else if (currentVector == 7 &&
                         !((BoardTools.EIGTH_COLUMN[this.coordinates] && this.colour == Colour.WHITE) ||
                          (BoardTools.FIRST_COLUMN[this.coordinates] && this.colour == Colour.BLACK)) ) {
@@ -53,10 +63,11 @@ public class Pawn extends Piece{
                     final Piece targetPiece = targetTile.getPiece();
                         if (targetPiece.getColour() != this.colour) {
                             //catch promotion
-                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.NULL));
+                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
                         }
                         break;
                 }
+            //pawn attack
             } else if (currentVector == 9 &&
                         !((BoardTools.FIRST_COLUMN[this.coordinates] && this.colour == Colour.WHITE) ||
                          (BoardTools.EIGTH_COLUMN[this.coordinates] && this.colour == Colour.BLACK)) ) {
@@ -64,11 +75,11 @@ public class Pawn extends Piece{
                     final Piece targetPiece = targetTile.getPiece();
                         if (targetPiece.getColour() != this.colour) {
                             //catch promotion
-                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.NULL));
+                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
                         }
                         break;
                     }
-                }
+            }
         }
 
         return LegalMoves;
@@ -81,6 +92,11 @@ public class Pawn extends Piece{
     @Override
     public Piece movePiece(Move move) {
         return new Pawn(move.getDestinationCoordinates(), move.getMoveColour());
+    }
+
+    @Override
+    public int getValue() {
+        return 1;
     }
     
 }

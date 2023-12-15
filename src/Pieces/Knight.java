@@ -15,7 +15,10 @@ public class Knight extends Piece{
     private final static int[] POSSIBLE_MOVES = {-17, -15, -10, -6, 6, 10, 15, 17};
 
     public Knight(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.KNIGHT);
+        super(coordinates, colour, Name.KNIGHT, true);
+    }
+    public Knight(int coordinates, Colour colour, boolean isFirstMove) {
+        super(coordinates, colour, Name.KNIGHT, isFirstMove);
     }
 
     @Override
@@ -75,6 +78,11 @@ public class Knight extends Piece{
     @Override
     public Piece movePiece(Move move) {
         return new Knight(move.getDestinationCoordinates(), move.getMoveColour());
+    }
+    
+    @Override
+    public int getValue() {
+        return 3;
     }
 }
 

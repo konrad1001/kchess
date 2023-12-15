@@ -15,7 +15,10 @@ public class Rook extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {8, -8, 1, -1};
 
     public Rook(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.ROOK);
+        super(coordinates, colour, Name.ROOK, true);
+    }
+    public Rook(int coordinates, Colour colour, boolean isFirstMove) {
+        super(coordinates, colour, Name.ROOK, isFirstMove);
     }
     
     @Override
@@ -32,7 +35,7 @@ public class Rook extends Piece{
                     isEigthColumnExclusion(destination, currentVector)) {
                         break;
                     }
-
+                
                 destination += currentVector;
                 if (BoardTools.isValid(destination)) {
                     
@@ -65,5 +68,10 @@ public class Rook extends Piece{
     @Override
     public Piece movePiece(Move move) {
         return new Rook(move.getDestinationCoordinates(), move.getMoveColour());
+    }
+
+    @Override
+    public int getValue() {
+        return 5;
     }
 }
