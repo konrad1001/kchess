@@ -15,6 +15,7 @@ public class Move {
     private final int interactedPieceDestination;
     private final Colour colour; //what colour is making this move.
     private final MoveType moveType;
+    private final Boolean isFirstMove;
 
     public Move() {
         this.board = null;
@@ -24,6 +25,7 @@ public class Move {
         this.interactedPieceDestination = 0;
         this.colour = null;
         this.moveType = MoveType.NULL;
+        this.isFirstMove = null;
     }
 
     public Move(final Board board, final Piece movedPiece,
@@ -35,6 +37,7 @@ public class Move {
             this.moveType = moveType;
             this.interactedPiece = null;
             this.colour = movedPiece.getColour();
+            this.isFirstMove = movedPiece.isFirstMove();
         }
     public Move(final Board board, final Piece movedPiece,
         final Piece interactedPiece,
@@ -46,6 +49,7 @@ public class Move {
             this.destination = destination;
             this.colour = movedPiece.getColour();
             this.moveType = moveType;
+            this.isFirstMove = movedPiece.isFirstMove();
         }
     public Move(final Board board, final Piece movedPiece,
         final Piece interactedPiece, final int destination, 
@@ -57,6 +61,7 @@ public class Move {
             this.destination = destination;
             this.colour = movedPiece.getColour();
             this.moveType = moveType;
+            this.isFirstMove = movedPiece.isFirstMove();
         }
     
         @Override
@@ -65,7 +70,7 @@ public class Move {
             int position = movedPiece.getCoordinates();
 
             return player + " moves " + movedPiece + " from " +
-                     String.valueOf(position) + " to " + String.valueOf(destination);
+                     String.valueOf(position) + " to " + String.valueOf(destination) + " is attack: " + isAttack();
         }
 
         @Override
@@ -75,6 +80,7 @@ public class Move {
 
             result = prime * result + this.destination;
             result = prime * result + this.movedPiece.hashCode();
+            result = prime * result + this.movedPiece.getCoordinates();
             if (moveType == MoveType.ATTACK) {
                 result = result + interactedPiece.hashCode();
             }
@@ -116,11 +122,21 @@ public class Move {
             return movedPiece;
         }
 
+
+        public boolean isAttack() {
+            return moveType == MoveType.ATTACK || moveType == MoveType.PAWN_ATTACK || moveType == MoveType.PAWN_ENPASSANT_ATTACK; 
+        }
+
+        public Piece getInteractedPiece() {
+            return interactedPiece;
+        }
+
         public Board execute() {
             //executing a move returns a new board
             final Builder builder = new Builder();
             switch (moveType) {
                 case STANDARD:
+                System.out.println("Executing standard");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -133,6 +149,7 @@ public class Move {
                     builder.set(movedPiece.movePiece(this));
                     break;
                 case ATTACK:
+                    System.out.println(movedPiece + " is attacking " + interactedPiece);
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!this.movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -148,10 +165,24 @@ public class Move {
                     break;
                     
                 case PAWN_ATTACK:
+                    System.out.println("Executing pawn attack");
+                    for (final Piece piece : board.getPieces(colour)) {
+                        if(!this.movedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    //set all of their unmoved unless it is interacted.
+                    for (final Piece piece : board.getPieces(colour.Opposite())) {
+                        if(!this.interactedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    builder.set(movedPiece.movePiece(this));
                     break;
                 case PAWN_ENPASSANT_ATTACK:
                     break;
                 case PAWN_JUMP:
+                    System.out.println("Executing pawn jump");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!this.movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -165,6 +196,17 @@ public class Move {
                     builder.setEnPassantPawn(pawn);
                     break;
                 case PAWN_MOVE:
+                    System.out.println("Executing pawn move");
+                    for (final Piece piece : board.getPieces(colour)) {
+                        if(!movedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    //set all of their unmoved.
+                    for (final Piece piece : board.getPieces(colour.Opposite())) {                       
+                        builder.set(piece);
+                    }
+                    builder.set(movedPiece.movePiece(this));
                     break;
                 case CASTLE: 
                     final Rook castleRook = (Rook) interactedPiece;
@@ -183,11 +225,26 @@ public class Move {
                     break;
                 
             }
-            
-            
+                       
             //switch teams
             builder.setCurrentPlayer(colour.Opposite());
             return builder.build();
+        }
+
+        public static class Constructor {
+            public static Move createMove(final Board board, 
+                                            final int currentCoordinate,
+                                            final int destinationCoordinate) {
+                
+                for (Move move : board.getAllLegalMoves()) {
+                    if (move.getCurrentCoordinate() == currentCoordinate &&
+                        move.getDestinationCoordinates() == destinationCoordinate) {
+                            return move;
+                        }
+        
+                }
+                return null;
+            }
         }
 
 }
