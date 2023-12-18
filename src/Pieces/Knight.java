@@ -35,9 +35,6 @@ public class Knight extends Piece{
             if (BoardTools.isValid(destination)) {
                 final Tile targetTile = board.getTile(destination);
 
-                System.out.println(this.colour + " Knight at " + this.coordinates + " is checking vector " + current + " for legal moves.");
-                 System.out.println("Checking destination " + destination + " contains " + board.getTile(destination).getPiece() );
-
                 //skip if within any columns that result in out of bounds move.
                 if (isFirstColumnExclusion(this.coordinates, current) ||
                 isSecondColumnExclusion(this.coordinates, current) ||
@@ -70,11 +67,11 @@ public class Knight extends Piece{
         return BoardTools.SECOND_COLUMN[current] && ((offset == -10) || (offset == 6));
     }
     private static boolean isSeventhColumnExclusion(int current, int offset) {
-        return BoardTools.SEVENTH_COLUMN[current] && ((offset == 17) || (offset == 10));
+        return BoardTools.SEVENTH_COLUMN[current] && ((offset == -6) || (offset == 10));
     }  
     private static boolean isEigthColumnExclusion(int current, int offset) {
         return BoardTools.EIGTH_COLUMN[current] && ((offset == 10) || (offset == -6) 
-                || (offset == -6) || (offset == -15));
+                || (offset == 17) || (offset == -15));
     }
     @Override
     public String toString() {
