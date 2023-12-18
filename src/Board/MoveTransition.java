@@ -1,5 +1,6 @@
 package Board;
 
+
 public class MoveTransition {
 
     private final Board transition;
@@ -14,6 +15,10 @@ public class MoveTransition {
 
     public MoveStatus getMoveStatus() {
         return moveStatus;
+    }
+
+    public Board getBoard() {
+        return transition;
     }
 
     
