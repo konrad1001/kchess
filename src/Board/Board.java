@@ -23,6 +23,9 @@ public class Board {
     private final Player whitePlayer;
     private final Player blackPlayer;
     private final Player currentPlayer;
+
+    private final Collection<Move> allLegalMoves;
+    
     
     private Board(final Builder builder) {
         this.tileBoard = tileBoard(builder);
@@ -32,7 +35,7 @@ public class Board {
         final Collection<Move> whiteLegalMoves = calculateLegalMoves(this.whitePieces);
         final Collection<Move> blackLegalMoves = calculateLegalMoves(this.blackPieces);
 
-        final Collection<Move> allLegalMoves = new ArrayList<>(whiteLegalMoves);
+        allLegalMoves = new ArrayList<>(whiteLegalMoves);
         allLegalMoves.addAll(blackLegalMoves);
 
         whitePlayer = new Player(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
@@ -167,6 +170,10 @@ public class Board {
             return blackPieces;
         }
     }
+    public Collection<Move> getAllLegalMoves() {
+        return allLegalMoves;
+    }
+
     public Player getPlayer(Colour colour) {
         if (colour == Colour.WHITE) {
             return whitePlayer;
