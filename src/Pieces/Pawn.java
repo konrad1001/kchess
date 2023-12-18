@@ -28,12 +28,7 @@ public class Pawn extends Piece{
 
         for (final int currentVector : POSSIBLE_MOVES_VECTORS) {
 
-            
-
             int destination = this.coordinates + this.getColour().getDirection() * currentVector;
-
-            System.out.println(this.colour + " Pawn at " + this.coordinates + " is checking vector " + currentVector + " for legal moves.");
-            System.out.println("Checking destination " + destination + " contains " + board.getTile(destination).getPiece() );
 
             if (!BoardTools.isValid(destination)) {
                 continue;
@@ -65,7 +60,7 @@ public class Pawn extends Piece{
                             //catch promotion
                             LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
                         }
-                        break;
+                        continue;
                 }
             //pawn attack
             } else if (currentVector == 9 &&
@@ -77,7 +72,7 @@ public class Pawn extends Piece{
                             //catch promotion
                             LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
                         }
-                        break;
+                        continue;
                     }
             }
         }
