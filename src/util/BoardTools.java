@@ -23,11 +23,20 @@ public class BoardTools {
 
     public static final int NUM_TILES = 64;
     public static final int ROW_LENGTH = 8;
-    public static final String[] ALGEBRAIC_NOTATION = null;
-    public static final Map<String, Integer> POSITION_TO_COORDINATE = null;
+    public static final String[] ALGEBRAIC_MAP = initialiseAlgebraicMap();
+  //  public static final Map<String, Integer> POSITION_TO_COORDINATE = null;
 
     public static boolean isValid(int coordinate) {
         return coordinate >= 0 && coordinate < NUM_TILES;
+    }
+
+
+    private static String[] initialiseAlgebraicMap() {
+        String[] algerbriacMap = new String[NUM_TILES];
+        for (int i = 0; i < NUM_TILES; i++) {
+            algerbriacMap[i] = toAlgerbraic(i);
+        }
+        return algerbriacMap;
     }
 
 
@@ -56,6 +65,19 @@ public class BoardTools {
         return grid;
     }
 
+    public static String toAlgerbraic(int coordinate) {
+
+        System.out.println("coordinate: " + coordinate);
+        int row = coordinate / ROW_LENGTH + 1;
+        int column = coordinate % (ROW_LENGTH) + 1;
+        
+        String[] files = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        int rank = 8 - row + 1;
+
+        return files[column - 1] + rank;
+        
+    }
+
     public static String printTile(Tile tile) {
         if (tile.isOccupied()) {
             Piece piece = tile.getPiece();
@@ -70,12 +92,8 @@ public class BoardTools {
         return "graphics\\" + colourPrefix + "_" + piece.getFullName().toLowerCase() + ".png";
     }
 
-    public static int getCoordinateAtPosition(final String position) {
-        return POSITION_TO_COORDINATE.get(position);
-    }
-
-    public static String getPositionAtCoordinate(final int coordinate) {
-        return ALGEBRAIC_NOTATION[coordinate];
+    public static String getAlgerbraMapped(final int coordinate) {
+        return ALGEBRAIC_MAP[coordinate];
     }
     
 }
