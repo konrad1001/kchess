@@ -10,6 +10,7 @@ import Board.MoveStatus;
 import Board.MoveTransition;
 import Board.Tile;
 import Pieces.Piece;
+import Pieces.Piece.Name;
 import util.BoardTools;
 
 import java.awt.*;
@@ -301,10 +302,15 @@ public class ChessBoardGUI {
         }
 
         private Collection<Move> pieceLegalMoves(Board board) {
+            List<Move> legalMoves = new ArrayList<>();         
             if (playerMovedPiece != null && playerMovedPiece.getColour() == board.getCurrentPlayer().colour()) {
-                return playerMovedPiece.calculateLegalMoves(board);
+                legalMoves = playerMovedPiece.calculateLegalMoves(board);
+                if(playerMovedPiece.getName() == Name.KING) {
+                    legalMoves.addAll(board.getPlayer(playerMovedPiece.getColour()).getKingCastles());
+                }
+                
             }
-            return Collections.emptyList();
+            return Collections.unmodifiableCollection(legalMoves);
         }
 
         public void drawTile() {
