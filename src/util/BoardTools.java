@@ -1,7 +1,5 @@
 package util;
 
-import java.util.Map;
-
 import Board.Tile;
 import Pieces.Piece;
 
@@ -65,9 +63,11 @@ public class BoardTools {
         return grid;
     }
 
-    public static String toAlgerbraic(int coordinate) {
+    public static Boolean isPromotionalTile(int coordinates, Colour colour) {
+        return colour == Colour.WHITE ? FIRST_ROW[coordinates] : EIGTH_ROW[coordinates];
+    }
 
-        System.out.println("coordinate: " + coordinate);
+    public static String toAlgerbraic(int coordinate) {
         int row = coordinate / ROW_LENGTH + 1;
         int column = coordinate % (ROW_LENGTH) + 1;
         

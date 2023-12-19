@@ -11,7 +11,6 @@ import Board.MoveTransition;
 import Board.Tile;
 import Pieces.Piece;
 import util.BoardTools;
-import util.Colour;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -32,7 +31,7 @@ public class ChessBoardGUI {
 
     private final BoardPanel boardPanel;
 
-    private static final Dimension FRAME_DIMENSIONS = new Dimension(600,600);
+    private static final Dimension FRAME_DIMENSIONS = new Dimension(600,650);
 
     private Board chessBoard;
 
@@ -43,13 +42,19 @@ public class ChessBoardGUI {
 
     private BoardDirection boardDirection;
 
-    private Boolean holdingPiece;
+    private TakenPiecesGUI takenPiecesGUI;
+
+    private final Log moveLog = new Log();
+
+    private boolean debugOptions;
 
     
 
     public ChessBoardGUI(final Board board) {
         this.chessBoard = board;
         this.boardDirection = BoardDirection.NORMAL;
+        this.debugOptions = false;
+
         gameFrame = new JFrame("kChess");
         gameFrame.setLayout(new BorderLayout());
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,8 +64,13 @@ public class ChessBoardGUI {
         gameFrame.setJMenuBar(tableMenuBar);
         gameFrame.setSize(FRAME_DIMENSIONS);
 
-        boardPanel = new BoardPanel(chessBoard);
-        gameFrame.add(this.boardPanel, BorderLayout.CENTER);
+        this.takenPiecesGUI = new TakenPiecesGUI();
+        this.boardPanel = new BoardPanel(chessBoard);
+
+        
+
+        gameFrame.add(boardPanel, BorderLayout.CENTER);
+        gameFrame.add(takenPiecesGUI, BorderLayout.SOUTH);
 
         gameFrame.setVisible(true);
     }
@@ -83,6 +93,15 @@ public class ChessBoardGUI {
             }
         });
         preferencesMenu.add(flipBoardMenuItem);
+        final JMenuItem debugToolsMenuItem = new JMenuItem("Debug Tools");
+        debugToolsMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                debugOptions = !debugOptions;
+                boardPanel.drawBoard();
+            }
+        });
+        preferencesMenu.add(debugToolsMenuItem);
         return preferencesMenu;
     }
 
@@ -113,12 +132,10 @@ public class ChessBoardGUI {
     private class BoardPanel extends JPanel {
         private static final Dimension BOARD_PANEL_DIMENSIONS = new Dimension(400, 350);
         final List<TilePanel> boardTiles; 
-     //   final Board board;
 
         BoardPanel(final Board board) {
             super(new GridLayout(8, 8));
             this.boardTiles = new ArrayList<>();
-        //    this.board = board;
             for(int i=0; i<BoardTools.NUM_TILES; i++) {
                 final TilePanel tilePanel = new TilePanel(this, i);
                 boardTiles.add(tilePanel);
@@ -174,6 +191,7 @@ public class ChessBoardGUI {
                         destinationTile = null;
                         playerMovedPiece = null;
                         isSelected = false;
+                        
                     } else if (isLeftMouseButton(e)) {
                         
                         //left click will select
@@ -181,15 +199,18 @@ public class ChessBoardGUI {
                         if (sourceTile == null) { //if we have nothing selected
                             sourceTile = chessBoard.getTile(tileID);
                             playerMovedPiece = sourceTile.getPiece();
+                            
                             if (playerMovedPiece == null) {
                                 sourceTile = null;
                                 isSelected = false;
                             }
+                            
                         } else { //we have something already selected, next selection will be a destination tile
                             destinationTile = chessBoard.getTile(tileID);
                             isSelected = false;
                             if (destinationTile.isOccupied()) {//if we have selected our own colour, reselect.
                                 if (destinationTile.getPiece().getColour() == playerMovedPiece.getColour()) {
+                                    isSelected = true;
                                     sourceTile = chessBoard.getTile(tileID);
                                     playerMovedPiece = sourceTile.getPiece();
                                     if (playerMovedPiece == null) {
@@ -197,26 +218,10 @@ public class ChessBoardGUI {
                                         isSelected = false;
                                     }
                                 } else {
-                                    final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
-                                
-                                    final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
-                                    if (transition.getMoveStatus() == MoveStatus.DONE) {
-                                        chessBoard = transition.getBoard();
-                                    }
-                                    sourceTile = null;
-                                    destinationTile = null;
-                                    playerMovedPiece = null;
+                                    executeMove();
                                 }
                             } else {
-                                final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
-                                
-                                final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
-                                if (transition.getMoveStatus() == MoveStatus.DONE) {
-                                    chessBoard = transition.getBoard();
-                                }
-                                sourceTile = null;
-                                destinationTile = null;
-                                playerMovedPiece = null;
+                                executeMove();
                             }
                         }
                         
@@ -229,8 +234,6 @@ public class ChessBoardGUI {
 
                         });
                     }
-                    
-
                 }
 
                 @Override
@@ -250,8 +253,26 @@ public class ChessBoardGUI {
                 }
                 
             });
-
+            
             validate();
+
+        }
+
+        private void executeMove() {
+            final Move move = Move.Constructor.createMove(chessBoard, sourceTile.getCoordinates(), destinationTile.getCoordinates());
+                                
+            final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
+            
+            if (transition.getMoveStatus() == MoveStatus.DONE) {
+                chessBoard = transition.getBoard();
+                moveLog.addMove(move);
+                takenPiecesGUI.redraw(moveLog);
+            }
+            sourceTile = null;
+            destinationTile = null;
+            playerMovedPiece = null;
+            
+            
         }
 
         public void deselect() {
@@ -274,6 +295,7 @@ public class ChessBoardGUI {
                         setBackground(selectedDarkTileColour);
                     }
                 }
+            
             }
             
         }
@@ -289,6 +311,14 @@ public class ChessBoardGUI {
             assignTileColour();
             assignTilePieceIcon();
             drawLegalMoves(chessBoard);
+
+            
+            if (debugOptions) {
+                JLabel TileID = new JLabel(Integer.toString(tileID));
+                TileID.setSize(ICON_DIMENSIONS);
+                add(TileID);
+            }
+
             validate();
         }
 
@@ -299,7 +329,7 @@ public class ChessBoardGUI {
                 final Piece pieceOnTile = chessBoard.getTile(tileID).getPiece();
                 
                 try {
-                    final BufferedImage image = ImageIO.read(new File(getPiecePath(pieceOnTile)));
+                    final BufferedImage image = ImageIO.read(new File(BoardTools.getPiecePath(pieceOnTile)));
                     Image scaledImage = image.getScaledInstance(70, 70, Image.SCALE_SMOOTH);
                     JLabel icon = new JLabel(new ImageIcon(scaledImage));
                     icon.setSize(ICON_DIMENSIONS);
@@ -311,16 +341,37 @@ public class ChessBoardGUI {
             }
         }
 
-        private String getPiecePath(final Piece piece) {
-            String colourPrefix = (piece.getColour() == Colour.WHITE) ? "w" : "b";
-            return "graphics\\" + colourPrefix + "_" + piece.getFullName().toLowerCase() + ".png";
-        }
+        
 
         private void assignTileColour() {
-            
-        //    boolean isLightTile = ((tileID + tileID / 8) % 2 == 0);
-
             setBackground(isLightTile ? lightTileColour : darkTileColour);
+        }
+    }
+
+    public static class Log {
+        private final List<Move> moves;
+
+        public Log() {
+            this.moves = new ArrayList<>();
+        }
+
+        public  void addMove(final Move move) {
+            if (move != null) {
+                moves.add(move);
+            }   
+        }
+
+        public void clear() {
+            moves.clear();
+        }
+
+        public List<Move> getMoves() {
+            return moves;
+        }
+
+        @Override
+        public String toString() {
+            return moves.toString();
         }
     }
 

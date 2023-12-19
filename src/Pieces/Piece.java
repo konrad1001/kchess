@@ -1,8 +1,7 @@
 package Pieces;
 
+import java.util.Collection;
 import java.util.List;
-
-import javax.print.attribute.standard.MediaSize.NA;
 
 import Board.Board;
 import Board.Move;
@@ -84,6 +83,10 @@ public abstract class Piece {
 
     public List<Move> getLegalMoves() {
         return LegalMoves;
+    }
+    public void addLegalMoves(Collection<Move> moves) {
+        
+        LegalMoves.addAll(moves);
     }
 
     public enum Name {

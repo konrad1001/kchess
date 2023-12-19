@@ -3,8 +3,6 @@ package Pieces;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.BadStringOperationException;
-
 import Board.Board;
 import Board.Move;
 import Board.MoveType;

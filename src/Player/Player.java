@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import Board.Board;
 import Board.Move;
 import Board.MoveStatus;
@@ -23,6 +21,7 @@ public class Player {
     private final Board board;
     private final Collection<Move> ourLegalMoves;
     private final Collection<Move> opponentLegalMoves;
+    private final Collection<Move> kingCastles;
     private final Colour colour;
     private final King king;
     private final boolean isInCheck;
@@ -34,22 +33,25 @@ public class Player {
         this.colour = colour;
         this.king = (King) board.getPiece("K", colour);
         if (king == null) {
-
             throw new RuntimeException("Invalid board! No " + colour + " king.");
         }
         if (colour == Colour.WHITE) {
             // this.ourLegalMoves = whiteLegalMoves;
             // Collection<Move> kingCastles = calculateKingCastles(whiteLegalMoves, blackLegalMoves);
             this.ourLegalMoves = new ArrayList<>(whiteLegalMoves);
-            ourLegalMoves.addAll(calculateKingCastles(whiteLegalMoves, blackLegalMoves));
-            this.opponentLegalMoves = blackLegalMoves;
+            this.opponentLegalMoves = blackLegalMoves;      
             this.isInCheck = !Player.calculateAttacks(king, blackLegalMoves).isEmpty();
         } else {
-            this.isInCheck = !Player.calculateAttacks(king, whiteLegalMoves).isEmpty();
-            this.opponentLegalMoves = whiteLegalMoves;
             this.ourLegalMoves = new ArrayList<>(blackLegalMoves);
-            ourLegalMoves.addAll(calculateKingCastles(blackLegalMoves, whiteLegalMoves));
+            this.opponentLegalMoves = whiteLegalMoves;          
+            this.isInCheck = !Player.calculateAttacks(king, whiteLegalMoves).isEmpty();
+        
         } 
+        this.kingCastles = calculateKingCastles();
+        this.ourLegalMoves.addAll(kingCastles);
+        System.out.println("King castles: " + kingCastles);
+        
+        king.addLegalMoves(kingCastles);
         
     }
 
@@ -86,7 +88,7 @@ public class Player {
         return king;
     }
 
-    public Collection<Move> calculateKingCastles(final Collection<Move> ourLegalMoves, final Collection<Move> opponentLegalMoves) {
+    private Collection<Move> calculateKingCastles() {
         final List<Move> kingCastles = new ArrayList<>();
 
         if (king.isFirstMove() && !isInCheck()) {
@@ -129,7 +131,8 @@ public class Player {
                         }
                         
                     }
-                } else {
+                }
+            } else {
                 //King side castle
                 if(!board.getTile(5).isOccupied() && 
                     !board.getTile(6).isOccupied()) {
@@ -166,16 +169,21 @@ public class Player {
                                     2, 3, 
                                     MoveType.CASTLE));
                         }
-                        }
-                        
                     }
                 }
+                        
             }
         }
-
+            
+        
+        
         return Collections.unmodifiableList(kingCastles);
     }
 
+    public Collection<Move> getKingCastles() {
+        return kingCastles;
+    }
+    
     public Collection<Move> getLegalMoves() {
         return ourLegalMoves;
     }
@@ -194,7 +202,7 @@ public class Player {
     private boolean hasEscapeMoves() {
         for (final Move move : ourLegalMoves) {
             final MoveTransition transition = makeMove(move);
-            if(transition.getMoveStatus().isDone()) {
+            if(transition.getMoveStatus() == MoveStatus.DONE) {
                 return true;
             }
         }
@@ -208,11 +216,17 @@ public class Player {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return colour + " Player";
+    }
+
     public MoveTransition makeMove(final Move move) {
         if (!isMoveLegal(move)) {
             //If move is illegal, return same board.
             return new MoveTransition(board, move, MoveStatus.ILLEGAL_MOVE);
         }
+        
 
         //Execute move.
         final Board newBoard = move.execute();
@@ -228,6 +242,10 @@ public class Player {
         }
 
         return new MoveTransition(newBoard, move, MoveStatus.DONE);
+    }
+
+    public Colour colour() {
+        return colour;
     }
 
 }
