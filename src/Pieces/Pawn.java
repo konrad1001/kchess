@@ -60,7 +60,14 @@ public class Pawn extends Piece{
                             //catch promotion
                             LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
                         }
-                        continue;
+                        
+                } else if (board.getEnpassantPawn() != null) {                           
+                    if (board.getEnpassantPawn().getCoordinates() == (this.coordinates + -1 * (this.colour.getDirection()))) {
+                        final Piece pieceOnCandidate = board.getEnpassantPawn();
+                        if (this.colour != pieceOnCandidate.getColour()) {
+                            LegalMoves.add(new Move(board, this, pieceOnCandidate, destination, MoveType.PAWN_ENPASSANT_ATTACK));
+                        }
+                    }
                 }
             //pawn attack
             } else if (currentVector == 9 &&
@@ -72,8 +79,15 @@ public class Pawn extends Piece{
                             //catch promotion
                             LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
                         }
-                        continue;
+                        
+                    } else if (board.getEnpassantPawn() != null) {                           
+                    if (board.getEnpassantPawn().getCoordinates() == (this.coordinates - -1 * (this.colour.getDirection()))) {
+                        final Piece pieceOnCandidate = board.getEnpassantPawn();
+                        if (this.colour != pieceOnCandidate.getColour()) {
+                            LegalMoves.add(new Move(board, this, pieceOnCandidate, destination, MoveType.PAWN_ENPASSANT_ATTACK));
+                        }
                     }
+                }
             }
         }
 

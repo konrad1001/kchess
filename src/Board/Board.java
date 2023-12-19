@@ -25,25 +25,41 @@ public class Board {
     private final Player currentPlayer;
 
     private final Collection<Move> allLegalMoves;
+
+    private final Pawn enPassantPawn;
     
     
     private Board(final Builder builder) {
         this.tileBoard = tileBoard(builder);
         this.whitePieces = getActivePieces(this.tileBoard, Colour.WHITE);
         this.blackPieces = getActivePieces(this.tileBoard, Colour.BLACK);
+        this.enPassantPawn = builder.enPassantPawn;
 
         final Collection<Move> whiteLegalMoves = calculateLegalMoves(this.whitePieces);
         final Collection<Move> blackLegalMoves = calculateLegalMoves(this.blackPieces);
 
+        
+
         allLegalMoves = new ArrayList<>(whiteLegalMoves);
         allLegalMoves.addAll(blackLegalMoves);
+        
 
         whitePlayer = new Player(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
         blackPlayer = new Player(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK);
+
+        final Collection<Move> whiteCastleMoves = getPlayer(Colour.WHITE).getKingCastles();
+        final Collection<Move> blackCastleMoves = getPlayer(Colour.BLACK).getKingCastles();
+
+        allLegalMoves.addAll(whiteCastleMoves);
+        allLegalMoves.addAll(blackCastleMoves);
         currentPlayer = builder.currentPlayer.choosePlayer(whitePlayer, blackPlayer);
         
 
         
+    }
+
+    public Piece getEnpassantPawn() {
+        return enPassantPawn;
     }
 
     @Override
@@ -122,7 +138,7 @@ public class Board {
         for (int i=8; i<16; i++) { 
             builder.set(new Pawn(i, Colour.BLACK));
         }
-        //set white
+        // set white
         builder.set(new Rook(56, Colour.WHITE));
         builder.set(new Knight(57, Colour.WHITE));
         builder.set(new Bishop(58, Colour.WHITE));
@@ -135,6 +151,7 @@ public class Board {
             builder.set(new Pawn(i, Colour.WHITE));
         }
         //initialise player
+
         builder.setCurrentPlayer(Colour.WHITE);
 
         return builder.build();
@@ -210,6 +227,9 @@ public class Board {
             this.enPassantPawn = pawn;
         }
     }
+
+
+    
 }
 
 

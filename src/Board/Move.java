@@ -69,8 +69,8 @@ public class Move {
             Colour player = movedPiece.getColour();
             int position = movedPiece.getCoordinates();
 
-            return player + " moves " + movedPiece + " from " +
-                     String.valueOf(position) + " to " + String.valueOf(destination) + " is attack: " + isAttack();
+            return player + " moves " + movedPiece.getFullName() + " from " +
+                     String.valueOf(position) + " to " + String.valueOf(destination) + " type " + moveType;
         }
 
         @Override
@@ -136,7 +136,7 @@ public class Move {
             final Builder builder = new Builder();
             switch (moveType) {
                 case STANDARD:
-                System.out.println("Executing standard");
+                    System.out.println("Executing standard");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -180,6 +180,19 @@ public class Move {
                     builder.set(movedPiece.movePiece(this));
                     break;
                 case PAWN_ENPASSANT_ATTACK:
+                    System.out.println("Executing pawn enpassant attack");
+                    for (final Piece piece : board.getPieces(colour)) {
+                        if(!this.movedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    //set all of their unmoved unless it is interacted.
+                    for (final Piece piece : board.getPieces(colour.Opposite())) {
+                        if(!this.interactedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    builder.set(movedPiece.movePiece(this));
                     break;
                 case PAWN_JUMP:
                     System.out.println("Executing pawn jump");
@@ -237,6 +250,7 @@ public class Move {
                                             final int destinationCoordinate) {
                 
                 for (Move move : board.getAllLegalMoves()) {
+                    System.out.println(move);
                     if (move.getCurrentCoordinate() == currentCoordinate &&
                         move.getDestinationCoordinates() == destinationCoordinate) {
                             return move;
