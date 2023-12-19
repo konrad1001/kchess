@@ -50,7 +50,7 @@ public class Queen extends Piece{
                         }
                         break;
                     }                    
-                }                
+                }               
             }
         }
 
@@ -60,7 +60,7 @@ public class Queen extends Piece{
         return BoardTools.FIRST_COLUMN[current] && ((offset == -1) || (offset == -9) || (offset == 7));
     }
     private static boolean isEigthColumnExclusion(int current, int offset) {
-        return BoardTools.EIGTH_COLUMN[current] && ((offset == 1) || (offset == -9) || (offset == 7));
+        return BoardTools.EIGTH_COLUMN[current] && ((offset == 1) || (offset == 9) || (offset == -7));
     }
     @Override
     public String toString() {
