@@ -3,6 +3,7 @@ package Board;
 import Board.Board.Builder;
 import Pieces.Pawn;
 import Pieces.Piece;
+import Pieces.Queen;
 import Pieces.Rook;
 import util.Colour;
 
@@ -234,6 +235,35 @@ public class Move {
                     }
                     builder.set(movedPiece.movePiece(this));
                     builder.set(new Rook(interactedPieceDestination, colour));
+                case PAWN_PROMOTION:
+                    final Queen promotedQueen = new Queen(destination, colour);
+                    for (final Piece piece : board.getPieces(colour)) {
+                        if(!movedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    //set all of their unmoved.
+                    for (final Piece piece : board.getPieces(colour.Opposite())) {                       
+                        builder.set(piece);
+                    }
+                    builder.set(promotedQueen);
+                    break;
+                case PAWN_PROMOTION_ATTACK:
+                    final Queen promotedQueenAttack = new Queen(destination, colour);
+                    for (final Piece piece : board.getPieces(colour)) {
+                        if(!movedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    //set all of their unmoved.
+                    for (final Piece piece : board.getPieces(colour.Opposite())) {                       
+                        if (!interactedPiece.equals(piece)) {
+                            builder.set(piece);
+                        }
+                    }
+                    builder.set(promotedQueenAttack);
+                    break;
+
                 default:
                     break;
                 

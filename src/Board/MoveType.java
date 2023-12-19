@@ -8,5 +8,7 @@ public enum MoveType {
     PAWN_ENPASSANT_ATTACK,
     PAWN_JUMP,
     CASTLE,
-    NULL
+    NULL, 
+    PAWN_PROMOTION,
+    PAWN_PROMOTION_ATTACK
 }

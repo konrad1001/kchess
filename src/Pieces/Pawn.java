@@ -39,8 +39,13 @@ public class Pawn extends Piece{
             
             //regular one space pawn move
             if (currentVector == 8 && !board.getTile(destination).isOccupied()) {
-                LegalMoves.add(new Move(board, this, destination, MoveType.PAWN_MOVE));  
-            
+                //first check if promotional.
+                if(BoardTools.isPromotionalTile(destination, colour)) {
+                    LegalMoves.add(new Move(board, this, destination, MoveType.PAWN_PROMOTION));
+                } else {
+                    LegalMoves.add(new Move(board, this, destination, MoveType.PAWN_MOVE));
+                }
+                
             //double move when first move is true and pawn is in starting row for respective colour.
             } else if (currentVector == 16 && this.isFirstMove() && 
                         ((BoardTools.SECOND_ROW[this.coordinates] && this.colour == Colour.BLACK) ||
@@ -58,7 +63,12 @@ public class Pawn extends Piece{
                     final Piece targetPiece = targetTile.getPiece();
                         if (targetPiece.getColour() != this.colour) {
                             //catch promotion
-                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
+                            if(BoardTools.isPromotionalTile(destination, colour)) {
+                                LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_PROMOTION_ATTACK));
+                            } else {
+                                LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
+                            }
+                            
                         }
                         
                 } else if (board.getEnpassantPawn() != null) {                           
@@ -77,7 +87,11 @@ public class Pawn extends Piece{
                     final Piece targetPiece = targetTile.getPiece();
                         if (targetPiece.getColour() != this.colour) {
                             //catch promotion
-                            LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
+                            if(BoardTools.isPromotionalTile(destination, colour)) {
+                                LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_PROMOTION_ATTACK));
+                            } else {
+                                LegalMoves.add(new Move(board, this, targetPiece, destination, MoveType.PAWN_ATTACK));
+                            }
                         }
                         
                     } else if (board.getEnpassantPawn() != null) {                           
