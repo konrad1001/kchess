@@ -61,6 +61,7 @@ public abstract class Piece {
         return myHashCode;
     }
 
+
     public abstract Piece movePiece(Move move);
 
     public abstract int getValue();

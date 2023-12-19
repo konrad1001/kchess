@@ -46,6 +46,7 @@ public class King extends Piece{
                 }
             }
         }
+        
         return LegalMoves;
     }
 
@@ -63,7 +64,7 @@ public class King extends Piece{
     }
     @Override
     public Piece movePiece(Move move) {
-        return new King(move.getDestinationCoordinates(), move.getMoveColour());
+        return new King(move.getDestinationCoordinates(), move.getMoveColour(), false);
     }
     @Override
     public int getValue() {
