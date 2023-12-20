@@ -11,7 +11,7 @@ import util.BoardTools;
 import util.Colour;
 
 import Pieces.*;
-import Player.Player;
+import Player.*;
 
 
 public class Board {
@@ -44,8 +44,8 @@ public class Board {
         allLegalMoves.addAll(blackLegalMoves);
         
 
-        whitePlayer = new Player(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
-        blackPlayer = new Player(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK);
+        whitePlayer = new HumanPlayer(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
+        blackPlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK);
 
         final Collection<Move> whiteCastleMoves = getPlayer(Colour.WHITE).getKingCastles();
         final Collection<Move> blackCastleMoves = getPlayer(Colour.BLACK).getKingCastles();
@@ -62,6 +62,9 @@ public class Board {
 
     public Piece getEnpassantPawn() {
         return enPassantPawn;
+    }
+    public boolean isGameOver() {
+        return currentPlayer.isInCheckmate() || currentPlayer.isInStalemate();
     }
 
     @Override
@@ -90,6 +93,13 @@ public class Board {
         return Collections.unmodifiableList(legalMoves);
     }
 
+    public Collection<Piece> getActivePieces(Colour colour) {
+        if (colour == Colour.WHITE) {
+            return whitePieces;
+        } else {
+            return blackPieces;
+        }
+    }
     private static Collection<Piece> getActivePieces(final List<Tile> tileBoard, final Colour colour) {
         
         final List<Piece> activePieces = new ArrayList<>();
@@ -235,6 +245,9 @@ public class Board {
             this.enPassantPawn = pawn;
         }
     }
+
+
+    
 
 
     

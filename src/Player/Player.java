@@ -16,22 +16,29 @@ import Pieces.Piece;
 import Pieces.Piece.Name;
 import util.Colour;
 
-public class Player {
+public abstract class Player {
 
     private final Board board;
     private final Collection<Move> ourLegalMoves;
     private final Collection<Move> opponentLegalMoves;
     private final Collection<Move> kingCastles;
+    private final Collection<Piece> activePieces;
+    
     private final Colour colour;
     private final King king;
     private final boolean isInCheck;
 
+    protected boolean isHuman; 
+
+    
+
     public Player(Board board, Collection<Move> whiteLegalMoves,
-                    Collection<Move> blackLegalMoves, Colour colour) {
+                    Collection<Move> blackLegalMoves, Colour colour, boolean isHuman) {
         this.board = board;
 
         this.colour = colour;
         this.king = (King) board.getPiece("K", colour);
+        this.activePieces = board.getActivePieces(colour);
         if (king == null) {
             throw new RuntimeException("Invalid board! No " + colour + " king.");
         }
@@ -49,7 +56,6 @@ public class Player {
         } 
         this.kingCastles = calculateKingCastles();
         this.ourLegalMoves.addAll(kingCastles);
-        System.out.println("King castles: " + kingCastles);
         
         king.addLegalMoves(kingCastles);
         
@@ -86,6 +92,10 @@ public class Player {
 
     public King getKing() {
         return king;
+    }
+
+    public boolean isHuman() {
+        return isHuman;
     }
 
     private Collection<Move> calculateKingCastles() {
@@ -188,6 +198,11 @@ public class Player {
         return ourLegalMoves;
     }
 
+    public Collection<Piece> getActivePieces() {
+            return activePieces;
+        }
+
+
     public boolean isMoveLegal(final Move move) {
         return ourLegalMoves.contains(move);
         
@@ -209,7 +224,7 @@ public class Player {
         return false;
     }
 
-    public boolean isInStaleMate() {
+    public boolean isInStalemate() {
         return !isInCheck && !hasEscapeMoves();
     }
     public boolean isCastled() {
