@@ -73,6 +73,6 @@ public class Queen extends Piece{
 
     @Override
     public int getValue() {
-        return 9;
+        return 900;
     }
 }
