@@ -18,24 +18,24 @@ import util.Colour;
 
 public abstract class Player {
 
-    private final Board board;
-    private final Collection<Move> ourLegalMoves;
-    private final Collection<Move> opponentLegalMoves;
-    private final Collection<Move> kingCastles;
-    private final Collection<Piece> activePieces;
+    protected final Board board;
+    protected final Collection<Move> ourLegalMoves;
+    protected final Collection<Move> opponentLegalMoves;
+    protected final Collection<Move> kingCastles;
+    protected final Collection<Piece> activePieces;
     
-    private final Colour colour;
-    private final King king;
-    private final boolean isInCheck;
+    protected final Colour colour;
+    protected final King king;
+    protected final boolean isInCheck;
 
-    protected boolean isHuman; 
+    protected final boolean isHuman; 
 
     
 
     public Player(Board board, Collection<Move> whiteLegalMoves,
                     Collection<Move> blackLegalMoves, Colour colour, boolean isHuman) {
         this.board = board;
-
+        this.isHuman = isHuman;
         this.colour = colour;
         this.king = (King) board.getPiece("K", colour);
         this.activePieces = board.getActivePieces(colour);
@@ -235,6 +235,8 @@ public abstract class Player {
     public String toString() {
         return colour + " Player";
     }
+
+    public abstract Move promptMove();
 
     public MoveTransition makeMove(final Move move) {
         if (!isMoveLegal(move)) {

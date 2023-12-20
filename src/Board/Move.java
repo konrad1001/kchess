@@ -137,7 +137,6 @@ public class Move {
             final Builder builder = new Builder();
             switch (moveType) {
                 case STANDARD:
-                    System.out.println("Executing standard");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -150,7 +149,6 @@ public class Move {
                     builder.set(movedPiece.movePiece(this));
                     break;
                 case ATTACK:
-                    System.out.println(movedPiece + " is attacking " + interactedPiece);
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!this.movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -166,7 +164,6 @@ public class Move {
                     break;
                     
                 case PAWN_ATTACK:
-                    System.out.println("Executing pawn attack");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!this.movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -181,7 +178,6 @@ public class Move {
                     builder.set(movedPiece.movePiece(this));
                     break;
                 case PAWN_ENPASSANT_ATTACK:
-                    System.out.println("Executing pawn enpassant attack");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!this.movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -196,7 +192,6 @@ public class Move {
                     builder.set(movedPiece.movePiece(this));
                     break;
                 case PAWN_JUMP:
-                    System.out.println("Executing pawn jump");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!this.movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -210,7 +205,6 @@ public class Move {
                     builder.setEnPassantPawn(pawn);
                     break;
                 case PAWN_MOVE:
-                    System.out.println("Executing pawn move");
                     for (final Piece piece : board.getPieces(colour)) {
                         if(!movedPiece.equals(piece)) {
                             builder.set(piece);
@@ -234,7 +228,8 @@ public class Move {
                         builder.set(piece);
                     }
                     builder.set(movedPiece.movePiece(this));
-                    builder.set(new Rook(interactedPieceDestination, colour));
+                    builder.set(new Rook(interactedPieceDestination, colour, false));
+                    break;
                 case PAWN_PROMOTION:
                     final Queen promotedQueen = new Queen(destination, colour);
                     for (final Piece piece : board.getPieces(colour)) {
@@ -271,6 +266,7 @@ public class Move {
                        
             //switch teams
             builder.setCurrentPlayer(colour.Opposite());
+            //build board
             return builder.build();
         }
 
@@ -280,7 +276,7 @@ public class Move {
                                             final int destinationCoordinate) {
                 
                 for (Move move : board.getAllLegalMoves()) {
-                    System.out.println(move);
+                    
                     if (move.getCurrentCoordinate() == currentCoordinate &&
                         move.getDestinationCoordinates() == destinationCoordinate) {
                             return move;

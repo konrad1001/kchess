@@ -12,5 +12,10 @@ public class HumanPlayer extends Player {
         super(board, whiteLegalMoves, blackLegalMoves, colour, true);
         
     }
+
+    @Override
+    public Move promptMove() {
+        return null;
+    }
     
 }

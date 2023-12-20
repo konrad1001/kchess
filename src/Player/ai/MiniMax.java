@@ -4,7 +4,6 @@ import Board.Board;
 import Board.Move;
 import Board.MoveStatus;
 import Board.MoveTransition;
-import Board.MoveType;
 import util.Colour;
 
 public class MiniMax implements MoveStrategy{
@@ -12,7 +11,7 @@ public class MiniMax implements MoveStrategy{
     private final Evaluator evaluator;
 
     public MiniMax() {
-        this.evaluator = null;
+        this.evaluator = new FirstGenerationEvaluator();
     }
 
     /**
@@ -48,6 +47,9 @@ public class MiniMax implements MoveStrategy{
         final long endTime = System.currentTimeMillis();
         final long executionTime = endTime- startTime;
         System.out.println("Execution time: " + executionTime + "ms");
+        
+            
+        
         return bestMove;
     }
 
