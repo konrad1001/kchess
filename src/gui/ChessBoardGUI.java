@@ -47,7 +47,8 @@ public class ChessBoardGUI {
 
     private final Log moveLog = new Log();
 
-    private boolean debugOptions;
+    private Boolean debugOptions;
+    private Boolean isActiveGame;
 
     
 
@@ -55,6 +56,7 @@ public class ChessBoardGUI {
         this.chessBoard = board;
         this.boardDirection = BoardDirection.NORMAL;
         this.debugOptions = false;
+        this.isActiveGame = true;
 
         gameFrame = new JFrame("kChess");
         gameFrame.setLayout(new BorderLayout());
@@ -116,6 +118,19 @@ public class ChessBoardGUI {
             }
         });
         fileMenu.add(openPGN);
+
+        final JMenuItem newGameMenuItem = new JMenuItem("New Game");
+        newGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chessBoard = Board.create();
+                boardPanel.drawBoard();
+                moveLog.clear();
+                takenPiecesGUI.redraw(moveLog);
+                isActiveGame = true;
+            }
+        });
+        fileMenu.add(newGameMenuItem);
 
         final JMenuItem exitMenuItem = new JMenuItem("Exit");
         exitMenuItem.addActionListener(new ActionListener() {
@@ -194,37 +209,39 @@ public class ChessBoardGUI {
                         isSelected = false;
                         
                     } else if (isLeftMouseButton(e)) {
-                        
-                        //left click will select
-                        isSelected = true;
-                        if (sourceTile == null) { //if we have nothing selected
-                            sourceTile = chessBoard.getTile(tileID);
-                            playerMovedPiece = sourceTile.getPiece();
-                            
-                            if (playerMovedPiece == null) {
-                                sourceTile = null;
+                        if (isActiveGame) {
+    //left click will select
+                            isSelected = true;
+                            if (sourceTile == null) { //if we have nothing selected
+                                sourceTile = chessBoard.getTile(tileID);
+                                playerMovedPiece = sourceTile.getPiece();
+                                
+                                if (playerMovedPiece == null) {
+                                    sourceTile = null;
+                                    isSelected = false;
+                                }
+                                
+                            } else { //we have something already selected, next selection will be a destination tile
+                                destinationTile = chessBoard.getTile(tileID);
                                 isSelected = false;
-                            }
-                            
-                        } else { //we have something already selected, next selection will be a destination tile
-                            destinationTile = chessBoard.getTile(tileID);
-                            isSelected = false;
-                            if (destinationTile.isOccupied()) {//if we have selected our own colour, reselect.
-                                if (destinationTile.getPiece().getColour() == playerMovedPiece.getColour()) {
-                                    isSelected = true;
-                                    sourceTile = chessBoard.getTile(tileID);
-                                    playerMovedPiece = sourceTile.getPiece();
-                                    if (playerMovedPiece == null) {
-                                        sourceTile = null;
-                                        isSelected = false;
+                                if (destinationTile.isOccupied()) {//if we have selected our own colour, reselect.
+                                    if (destinationTile.getPiece().getColour() == playerMovedPiece.getColour()) {
+                                        isSelected = true;
+                                        sourceTile = chessBoard.getTile(tileID);
+                                        playerMovedPiece = sourceTile.getPiece();
+                                        if (playerMovedPiece == null) {
+                                            sourceTile = null;
+                                            isSelected = false;
+                                        }
+                                    } else {
+                                        executeMove();
                                     }
                                 } else {
                                     executeMove();
                                 }
-                            } else {
-                                executeMove();
                             }
                         }
+                        
                         
                         SwingUtilities.invokeLater(new Runnable() {
 
@@ -273,7 +290,15 @@ public class ChessBoardGUI {
             destinationTile = null;
             playerMovedPiece = null;
             
-            
+            //check if game is over
+            if (chessBoard.getCurrentPlayer().isInCheckmate()) {
+                isActiveGame = false;
+                System.out.println("Checkmate!");
+                JDialog endMenuGUI = new EndMenuGUI(chessBoard.getCurrentPlayer().colour().Opposite().toString(), chessBoard);
+                endMenuGUI.setVisible(true);
+            } else if (chessBoard.getCurrentPlayer().isInStaleMate()) {
+                System.out.println("Stalemate!");
+            }
         }
 
         public void deselect() {

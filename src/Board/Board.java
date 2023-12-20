@@ -53,6 +53,8 @@ public class Board {
         allLegalMoves.addAll(whiteCastleMoves);
         allLegalMoves.addAll(blackCastleMoves);
         currentPlayer = builder.currentPlayer.choosePlayer(whitePlayer, blackPlayer);
+
+        
         
 
         
@@ -154,6 +156,12 @@ public class Board {
 
         builder.setCurrentPlayer(Colour.WHITE);
 
+        return builder.build();
+    }
+
+    public static Board clear() {
+        final Builder builder = new Builder();
+        builder.setCurrentPlayer(Colour.WHITE);
         return builder.build();
     }
 
