@@ -64,7 +64,7 @@ public class King extends Piece{
     }
     @Override
     public Piece movePiece(Move move) {
-        return new King(move.getDestinationCoordinates(), move.getMoveColour(), false);
+        return new King(move.getDestinationCoordinate(), move.getMoveColour(), false);
     }
     @Override
     public int getValue() {

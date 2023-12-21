@@ -72,7 +72,7 @@ public class Bishop extends Piece{
 
     @Override
     public Piece movePiece(Move move) {
-        return new Bishop(move.getDestinationCoordinates(), move.getMoveColour(), false);
+        return new Bishop(move.getDestinationCoordinate(), move.getMoveColour(), false);
     }
     @Override
     public int getValue() {
