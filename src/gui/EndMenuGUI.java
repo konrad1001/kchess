@@ -33,7 +33,7 @@ public class EndMenuGUI extends JDialog{
         setVisible(true);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        String message = winner + " wins!";
+        String message = winner;
         this.board = board;
 
         this.message = new JLabel(message);
