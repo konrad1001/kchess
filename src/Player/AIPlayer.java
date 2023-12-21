@@ -11,11 +11,11 @@ import util.Colour;
 public class AIPlayer extends Player {
 
     final MoveStrategy brain;
-    final int SEARCH_DEPTH = 4;
+    final int SEARCH_DEPTH = 8;
 
-    public AIPlayer(Board board, Collection<Move> whiteLegalMoves, Collection<Move> blackLegalMoves, Colour colour) {
+    public AIPlayer(Board board, Collection<Move> whiteLegalMoves, Collection<Move> blackLegalMoves, Colour colour, MoveStrategy brain) {
         super(board, whiteLegalMoves, blackLegalMoves, colour, false);
-        brain = new MiniMax();
+        this.brain = brain;
     }
 
     @Override
