@@ -88,6 +88,8 @@ public class ChessBoardGUI {
 
         gameFrame.setVisible(true);
 
+        notifyGameStart();
+
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -104,6 +106,10 @@ public class ChessBoardGUI {
 
     public void notifyOpponentHasMoved() {
         pcs.firePropertyChange("opponent_has_moved", null, null);
+    }
+
+    public void notifyGameStart() {
+        pcs.firePropertyChange("game_start", null, null);
     }
 
     private JMenuBar createMenuBar() {
@@ -190,30 +196,25 @@ public class ChessBoardGUI {
                     sourceTile = null;
                     destinationTile = null;
                     playerMovedPiece = null;
-                    notifyOpponentHasMoved();
-                } else {
-                    System.out.println("AI turn");
-                    final Move move = chessBoard.getCurrentPlayer().promptMove();
-                    final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
-
-                    System.out.println(move);
-                
-                    if (transition.getMoveStatus() == MoveStatus.DONE) {
-                        chessBoard = transition.getBoard();
-                        moveLog.addMove(move);
-                        takenPiecesGUI.redraw(moveLog);
-                    }
+                    boardPanel.drawBoard();
+                    System.out.println("drawn");
                     notifyOpponentHasMoved();
                 }
                 
                 
               //  checkEndgame();
             } else if ("opponent_has_moved".equals(evt.getPropertyName())) {
-                if (!chessBoard.getCurrentPlayer().isHuman()) {
-
+                
+                if (!chessBoard.getCurrentPlayer().isHuman() && isActiveGame) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     final Move move = chessBoard.getCurrentPlayer().promptMove();
                     final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
-
+                    
                     System.out.println(move);
                 
                     if (transition.getMoveStatus() == MoveStatus.DONE) {
@@ -222,8 +223,25 @@ public class ChessBoardGUI {
                         takenPiecesGUI.redraw(moveLog);
                     }
                     checkEndgame();
-                }
+                    boardPanel.drawBoard();
+                    notifyOpponentHasMoved();
+                    
+                } 
+            } else if ("game_start".equals(evt.getPropertyName())) {
+                if (!chessBoard.getCurrentPlayer().isHuman() && isActiveGame) {
+                    final Move move = chessBoard.getCurrentPlayer().promptMove();
+                    final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
+                    
+                    System.out.println(move);
                 
+                    if (transition.getMoveStatus() == MoveStatus.DONE) {
+                        chessBoard = transition.getBoard();
+                        moveLog.addMove(move);
+                        takenPiecesGUI.redraw(moveLog);
+                    }
+                    checkEndgame();
+                    notifyOpponentHasMoved();
+                }
             }
         }
 
@@ -231,10 +249,13 @@ public class ChessBoardGUI {
             if (chessBoard.getCurrentPlayer().isInCheckmate()) {
                 isActiveGame = false;
                 System.out.println("Checkmate!");
-                JDialog endMenuGUI = new EndMenuGUI(chessBoard.getCurrentPlayer().colour().Opposite().toString(), chessBoard);
+                JDialog endMenuGUI = new EndMenuGUI(chessBoard.getCurrentPlayer().colour().Opposite().toString() + " wins!", chessBoard);
                 endMenuGUI.setVisible(true);
             } else if (chessBoard.getCurrentPlayer().isInStalemate()) {
+                isActiveGame = false;
                 System.out.println("Stalemate!");
+                JDialog endMenuGUI = new EndMenuGUI(chessBoard.getCurrentPlayer().colour().toString() + " is in Stalemate!", chessBoard);
+                endMenuGUI.setVisible(true);
             }
         }
 
@@ -263,6 +284,19 @@ public class ChessBoardGUI {
                 tile.drawTile();
                 add(tile);
                 tile.deselect();
+            }
+            validate();
+            repaint();
+        }
+
+        public void drawBoard(int tileID) {
+            
+            for (final TilePanel tile : boardDirection.traverse(boardTiles)) {
+                if (tile.tileID == tileID) {
+                    tile.drawTile();
+                    add(tile);
+                    tile.deselect();
+                }
             }
             validate();
             repaint();
@@ -410,7 +444,7 @@ public class ChessBoardGUI {
                 }
             } 
             for (final Move move : pieceLegalMoves(board)) {
-                if (move.getDestinationCoordinates() == this.tileID) {
+                if (move.getDestinationCoordinate() == this.tileID) {
                     if (isLightTile) {
                         setBackground(selectedLightTileColour);
                     } else {
@@ -441,9 +475,9 @@ public class ChessBoardGUI {
 
             
             if (debugOptions) {
-                JLabel TileID = new JLabel(Integer.toString(tileID));
-                TileID.setSize(ICON_DIMENSIONS);
-                add(TileID);
+                JLabel Tile = new JLabel(Integer.toString(tileID));
+                Tile.setSize(ICON_DIMENSIONS);
+                add(Tile);
             }
 
             validate();
