@@ -98,12 +98,12 @@ public class Move {
             }
             final Move otherMove = (Move) other;
             return getCurrentCoordinate() == otherMove.getCurrentCoordinate() &&
-                    getDestinationCoordinates() == otherMove.getDestinationCoordinates() &&
+                    getDestinationCoordinate() == otherMove.getDestinationCoordinate() &&
                     getMovedPiece().equals(getMovedPiece()) && getType() == otherMove.getType();
 
         }
 
-        public int getDestinationCoordinates() {
+        public int getDestinationCoordinate() {
             return destination;
         }
         public int getCurrentCoordinate() {
@@ -278,7 +278,7 @@ public class Move {
                 for (Move move : board.getAllLegalMoves()) {
                     
                     if (move.getCurrentCoordinate() == currentCoordinate &&
-                        move.getDestinationCoordinates() == destinationCoordinate) {
+                        move.getDestinationCoordinate() == destinationCoordinate) {
                             return move;
                         }
         
