@@ -15,10 +15,10 @@ public class King extends Piece{
     private final static int[] POSSIBLE_MOVES_VECTORS = {-9, -8, -7, -1, 1, 7, 8, 9};
 
     public King(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.KING, true);
+        super(coordinates, colour, Name.KING, true, true);
     }
     public King(int coordinates, Colour colour, boolean isFirstMove) {
-        super(coordinates, colour, Name.KING, isFirstMove);
+        super(coordinates, colour, Name.KING, isFirstMove, true);
     }
 
     @Override
@@ -69,5 +69,22 @@ public class King extends Piece{
     @Override
     public int getValue() {
         return 10000;
+    }
+    @Override
+    public int onFavouriteTile() {
+        //prefers castling
+        if (colour == Colour.WHITE) {
+            if (this.coordinates == 62 || this.coordinates == 58) {
+                return 10;
+            } else {
+                return 1;
+            }
+        } else {
+            if (this.coordinates == 6 || this.coordinates == 2) {
+                return 10;
+            } else {
+                return 1;
+            }
+        }
     }
 }

@@ -16,18 +16,22 @@ public abstract class Piece {
     protected List<Move> LegalMoves;
 
     protected boolean isFirstMove;
+    protected boolean isMajorPiece;
+
+    
 
     private final int myHashCode;
 
     final Name name;
 
-    public Piece(int coordinates, Colour colour, Name name, final Boolean isFirstMove) {
+    public Piece(int coordinates, Colour colour, Name name, final boolean isFirstMove, final boolean isMajorPiece) {
         this.coordinates = coordinates;
         this.colour = colour;
         this.isFirstMove = true;
         this.name = name;
         this.isFirstMove = isFirstMove;
         this.myHashCode = calculateHash();
+        this.isMajorPiece = isMajorPiece;
     }
     private int calculateHash() {
         int result = name.hashCode();
@@ -61,6 +65,7 @@ public abstract class Piece {
         return myHashCode;
     }
 
+    public abstract int onFavouriteTile();
 
     public abstract Piece movePiece(Move move);
 
@@ -88,6 +93,10 @@ public abstract class Piece {
     public void addLegalMoves(Collection<Move> moves) {
         
         LegalMoves.addAll(moves);
+    }
+
+    public boolean isMajorPiece() {
+        return isMajorPiece;
     }
 
     public enum Name {

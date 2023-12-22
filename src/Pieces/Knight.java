@@ -15,10 +15,10 @@ public class Knight extends Piece{
     private final static int[] POSSIBLE_MOVES = {-17, -15, -10, -6, 6, 10, 15, 17};
 
     public Knight(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.KNIGHT, true);
+        super(coordinates, colour, Name.KNIGHT, true, true);
     }
     public Knight(int coordinates, Colour colour, boolean isFirstMove) {
-        super(coordinates, colour, Name.KNIGHT, isFirstMove);
+        super(coordinates, colour, Name.KNIGHT, isFirstMove, true);
     }
 
     @Override
@@ -85,6 +85,24 @@ public class Knight extends Piece{
     @Override
     public int getValue() {
         return 300;
+    }
+
+    @Override
+    public int onFavouriteTile() {
+        //strong centre position
+        if (colour == Colour.WHITE) {
+            if (this.coordinates == 42 || this.coordinates == 45) {
+                return 10;    
+            } else {
+                return 1;
+            }
+        } else {
+            if (this.coordinates == 18 || this.coordinates == 21) {
+                return 10;
+            } else {
+                return 1;
+            }
+        }
     }
 }
 

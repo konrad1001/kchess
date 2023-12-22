@@ -15,10 +15,10 @@ public class Bishop extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {-9, -7, 7, 9};
 
     public Bishop(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.BISHOP, true);
+        super(coordinates, colour, Name.BISHOP, true, true);
     }
     public Bishop(int coordinates, Colour colour, boolean isFirstMove) {
-        super(coordinates, colour, Name.BISHOP, isFirstMove);
+        super(coordinates, colour, Name.BISHOP, isFirstMove, true);
     }
     
     @Override
@@ -76,6 +76,23 @@ public class Bishop extends Piece{
     }
     @Override
     public int getValue() {
-        return 3;
+        return 300;
+    }
+    @Override
+    public int onFavouriteTile() {
+        if (colour == Colour.WHITE) {
+            //strong corner position
+            if (coordinates == 49 || coordinates == 54 || coordinates == 34 || coordinates == 37 || coordinates == 30 || coordinates == 25) {
+                return 10;
+            } else {
+                return 1;
+            } 
+        } else {
+            if (coordinates == 9 || coordinates == 14 || coordinates == 29 || coordinates == 38 || coordinates == 26 || coordinates == 33) {
+                return 10;
+            } else {
+                return 1;
+            } 
+        }
     }
 }

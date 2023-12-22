@@ -15,10 +15,10 @@ public class Queen extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {8, -8, 1, -1, -9, -7, 7, 9};
 
     public Queen(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.QUEEN, true);
+        super(coordinates, colour, Name.QUEEN, true, true);
     }
     public Queen(int coordinates, Colour colour, boolean isFirstMove) {
-        super(coordinates, colour, Name.QUEEN, isFirstMove);
+        super(coordinates, colour, Name.QUEEN, isFirstMove, true);
     }
     
     @Override
@@ -74,5 +74,11 @@ public class Queen extends Piece{
     @Override
     public int getValue() {
         return 900;
+    }
+
+    @Override
+    public int onFavouriteTile() {
+        //no specific preference
+        return 1;
     }
 }

@@ -15,10 +15,10 @@ public class Rook extends Piece{
     private int[] POSSIBLE_MOVES_VECTORS = {8, -8, 1, -1};
 
     public Rook(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.ROOK, true);
+        super(coordinates, colour, Name.ROOK, true, true);
     }
     public Rook(int coordinates, Colour colour, boolean isFirstMove) {
-        super(coordinates, colour, Name.ROOK, isFirstMove);
+        super(coordinates, colour, Name.ROOK, isFirstMove, true);
     }
     
     @Override
@@ -73,5 +73,24 @@ public class Rook extends Piece{
     @Override
     public int getValue() {
         return 500;
+    }
+
+    @Override
+    public int onFavouriteTile() {
+        if (colour == Colour.WHITE) {
+            if (this.coordinates == 61 || this.coordinates == 60
+                || this.coordinates == 59 || this.coordinates == 57) {
+                return 3;
+            } else {
+                return 1;
+            }
+        } else {
+            if (this.coordinates == 3 || this.coordinates == 4
+                || this.coordinates == 5 || this.coordinates == 1) {
+                return 3;
+            } else {
+                return 1;
+            }
+        }
     }
 }

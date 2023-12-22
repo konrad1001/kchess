@@ -15,10 +15,10 @@ public class Pawn extends Piece{
     private final static int[] POSSIBLE_MOVES_VECTORS = {7, 8, 9, 16};
 
     public Pawn(int coordinates, Colour colour) {
-        super(coordinates, colour, Name.PAWN, true);
+        super(coordinates, colour, Name.PAWN, true, false);
     }
     public Pawn(int coordinates, Colour colour, boolean isFirstMove) {
-        super(coordinates, colour, Name.PAWN, isFirstMove);
+        super(coordinates, colour, Name.PAWN, isFirstMove, false);
     }
 
     @Override
@@ -120,6 +120,24 @@ public class Pawn extends Piece{
     @Override
     public int getValue() {
         return 100;
+    }
+
+    @Override
+    public int onFavouriteTile() {
+        //prefers castling
+        if (colour == Colour.WHITE) {
+            if (this.coordinates == 43 || this.coordinates == 44) {
+                return 100;
+            }  else {
+                return 1;
+            }
+        } else {
+            if (this.coordinates == 27 || this.coordinates == 28) {
+                return 100;
+            } else {
+                return 1;
+            }
+        }
     }
     
 }
