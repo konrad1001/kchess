@@ -13,6 +13,7 @@ import Board.MoveType;
 import Board.Tile;
 import Pieces.King;
 import Pieces.Piece;
+import Pieces.Queen;
 import Pieces.Piece.Name;
 import util.Colour;
 
@@ -64,7 +65,7 @@ public abstract class Player {
     private static Collection<Move> calculateAttacks(final Piece attackedPiece, final Collection<Move> moves) {
         final List<Move> attackMoves = new ArrayList<>();
         for (final Move move: moves) {
-            if (attackedPiece.getCoordinates() == move.getDestinationCoordinates()) {
+            if (attackedPiece.getCoordinates() == move.getDestinationCoordinate()) {
                 //if piece is attacked 
                 attackMoves.add(move);
             }
@@ -74,7 +75,7 @@ public abstract class Player {
     private static Collection<Move> calculateAttacks(final Tile attackedTile, final Collection<Move> moves) {
         final List<Move> attackMoves = new ArrayList<>();
         for (final Move move: moves) {
-            if (attackedTile.getCoordinates() == move.getDestinationCoordinates()) {
+            if (attackedTile.getCoordinates() == move.getDestinationCoordinate()) {
                 //if piece is attacked 
                 attackMoves.add(move);
             }
@@ -92,6 +93,9 @@ public abstract class Player {
 
     public King getKing() {
         return king;
+    }
+    public Queen getQueen() {
+        return (Queen) board.getPiece("Q", colour);
     }
 
     public boolean isHuman() {
@@ -194,7 +198,7 @@ public abstract class Player {
         return kingCastles;
     }
     
-    public Collection<Move> getLegalMoves() {
+    public Collection<Move> getLegalMoves() {    
         return ourLegalMoves;
     }
 

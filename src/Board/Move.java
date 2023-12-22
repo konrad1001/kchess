@@ -18,6 +18,8 @@ public class Move {
     private final MoveType moveType;
     private final Boolean isFirstMove;
 
+    
+
     public Move() {
         this.board = null;
         this.movedPiece = null;

@@ -12,6 +12,8 @@ import util.Colour;
 
 import Pieces.*;
 import Player.*;
+import Player.ai.MiniMax;
+import Player.ai.Random;
 
 
 public class Board {
@@ -44,8 +46,9 @@ public class Board {
         allLegalMoves.addAll(blackLegalMoves);
         
 
-        whitePlayer = new HumanPlayer(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
-        blackPlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK);
+     //   whitePlayer = new HumanPlayer(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
+        whitePlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE, new Random());
+        blackPlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK, new MiniMax());
 
         final Collection<Move> whiteCastleMoves = getPlayer(Colour.WHITE).getKingCastles();
         final Collection<Move> blackCastleMoves = getPlayer(Colour.BLACK).getKingCastles();

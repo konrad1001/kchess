@@ -76,6 +76,7 @@ public class MiniMax implements MoveStrategy{
                     int eval = miniMax(board, depth - 1, false, alpha, beta);
                     maxEval = Math.max(maxEval, eval);
                     alpha = Math.max(alpha, maxEval);
+                    
                     if (beta <= alpha) {
                         break;
                     }

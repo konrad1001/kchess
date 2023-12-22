@@ -9,10 +9,11 @@ import util.Colour;
 
 public class FirstGenerationEvaluator implements Evaluator { 
     
-    private static final int CHECK_BONUS = 50;
+    private static final int CHECK_BONUS = 30;
     private static final int CHECK_MATE_BONUS = 10000;
     private static final int CASTLE_BONUS = 30;
     private static final int PAWN_VALUE = 100;
+    private static final int ATTACK_MULTIPLIER = 1;
     private static int gameProgression;
 
 
@@ -40,13 +41,18 @@ public class FirstGenerationEvaluator implements Evaluator {
         System.out.println("Queen safety: " + queenSafety(player));
         System.out.println(board);
         return pieceValue(player) + mobility(player) + kingSafety(player)
-         + checkmate(player, depth) + check(player) + castle(player) + queenSafety(player);
+         + checkmate(player, depth) + check(player) + castle(player)
+          + queenSafety(player) + attacks(player) + majorPieceSafety(player);
     }
 
     private int pieceValue(Player player) {
         int pieceValueScore = 0;
         for (final Piece piece : player.getActivePieces()) {
-            pieceValueScore += piece.getValue();
+            pieceValueScore += piece.getValue() * 5;
+            if (gameProgression < 2) {
+                pieceValueScore += piece.onFavouriteTile() * piece.getValue() / 10;
+            }
+                
         }
         return pieceValueScore;
     }
@@ -63,10 +69,10 @@ public class FirstGenerationEvaluator implements Evaluator {
                     mobilityScore += piece.getLegalMoves().size() * 5;
                     break;
                 case KNIGHT:
-                    mobilityScore += piece.getLegalMoves().size() * 20;
+                    mobilityScore += piece.getLegalMoves().size() * 50;
                     break;
                 case BISHOP:
-                    mobilityScore += piece.getLegalMoves().size() * 20;
+                    mobilityScore += piece.getLegalMoves().size() * 50;
                     break;
                 case ROOK:
                     mobilityScore += piece.getLegalMoves().size() * 10 * (gameProgression / 12);
@@ -83,6 +89,20 @@ public class FirstGenerationEvaluator implements Evaluator {
         }
        
         return mobilityScore;
+    }
+
+    private static int attacks(Player player) {
+        int attackScore = 0;
+        for (final Move move : player.getLegalMoves()) {
+            if (move.isAttack()) {
+                Piece movedPiece = move.getMovedPiece();
+                Piece attackedPiece = move.getInteractedPiece();
+                if (movedPiece.getValue() > attackedPiece.getValue()) {
+                    attackScore += attackedPiece.getValue();
+                }
+            }
+        }
+        return attackScore * ATTACK_MULTIPLIER;
     }
 
     private int kingSafety(Player player) {
@@ -117,13 +137,29 @@ public class FirstGenerationEvaluator implements Evaluator {
             for (Move move : player.getOpponent().getLegalMoves()) {
                 if (move.getDestinationCoordinate() == queen.getCoordinates()) {
                     
-                    queenSafetyScore -= queen.getValue();
+                    queenSafetyScore -= queen.getValue() * 10;
                     System.out.println("Queen is in danger! " + move);
                 }
             }
             
         }
         return queenSafetyScore;
+    }
+
+    //unsafe major piece penalty
+    private static int majorPieceSafety(Player player) {
+        int majorPieceSafetyScore = 0;
+        for (final Piece piece : player.getActivePieces()) {
+            if (piece.isMajorPiece()) {
+                for (Move move : player.getOpponent().getLegalMoves()) {
+                    if (move.getDestinationCoordinate() == piece.getCoordinates()) {
+                        majorPieceSafetyScore -= piece.getValue() * PAWN_VALUE;
+                        System.out.println("Major piece is in danger! " + move);
+                    }
+                }
+            }
+        }
+        return majorPieceSafetyScore;
     }
 
     

@@ -162,6 +162,7 @@ public class ChessBoardGUI {
                 moveLog.clear();
                 takenPiecesGUI.redraw(moveLog);
                 isActiveGame = true;
+                notifyGameStart();
             }
         });
         fileMenu.add(newGameMenuItem);
