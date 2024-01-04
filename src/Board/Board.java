@@ -47,8 +47,8 @@ public class Board {
         
 
      //   whitePlayer = new HumanPlayer(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE);
-        whitePlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves, Colour.WHITE, new Random());
-        blackPlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves,  Colour.BLACK, new MiniMax());
+        blackPlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves, Colour.BLACK, new Random());
+        whitePlayer = new AIPlayer(this, whiteLegalMoves, blackLegalMoves,  Colour.WHITE, new MiniMax());
 
         final Collection<Move> whiteCastleMoves = getPlayer(Colour.WHITE).getKingCastles();
         final Collection<Move> blackCastleMoves = getPlayer(Colour.BLACK).getKingCastles();

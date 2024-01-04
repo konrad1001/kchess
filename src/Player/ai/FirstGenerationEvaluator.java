@@ -4,6 +4,7 @@ import Board.Board;
 import Board.Move;
 import Pieces.Piece;
 import Pieces.Queen;
+import Pieces.Piece.Name;
 import Player.Player;
 import util.Colour;
 
@@ -13,7 +14,7 @@ public class FirstGenerationEvaluator implements Evaluator {
     private static final int CHECK_MATE_BONUS = 10000;
     private static final int CASTLE_BONUS = 30;
     private static final int PAWN_VALUE = 100;
-    private static final int ATTACK_MULTIPLIER = 1;
+    private static final int ATTACK_MULTIPLIER = 30;
     private static int gameProgression;
 
 
@@ -21,34 +22,26 @@ public class FirstGenerationEvaluator implements Evaluator {
     public int evaluate(final Board board, int depth) {
 
         gameProgression = (32 - (board.getActivePieces(Colour.WHITE).size() + board.getActivePieces(Colour.BLACK).size()));
-        System.out.println(gameProgression);
+   //     System.out.println(gameProgression);
         
         int score = score(board, board.getPlayer(Colour.WHITE), depth) - 
             score(board, board.getPlayer(Colour.BLACK), depth);
 
-        System.out.println("Score: " + score);
+  //      System.out.println("Score: " + score);
         return score;
     }
 
     private int score(Board board, Player player, int depth) {
-        System.out.println("Player: " + player.colour());
-        System.out.println("Piece value: " + pieceValue(player));
-        System.out.println("Mobility: " + mobility(player));
-        System.out.println("King safety: " + kingSafety(player));
-        System.out.println("Checkmate: " + checkmate(player, depth));
-        System.out.println("Check: " + check(player));
-        System.out.println("Castle: " + castle(player));
-        System.out.println("Queen safety: " + queenSafety(player));
-        System.out.println(board);
-        return pieceValue(player) + mobility(player) + kingSafety(player)
+
+        return pieceValue(player) + mobilityRatio(player) + kingSafety(player)
          + checkmate(player, depth) + check(player) + castle(player)
-          + queenSafety(player) + attacks(player) + majorPieceSafety(player);
+         + attacks(player);
     }
 
     private int pieceValue(Player player) {
         int pieceValueScore = 0;
         for (final Piece piece : player.getActivePieces()) {
-            pieceValueScore += piece.getValue() * 5;
+            pieceValueScore += piece.getValue();
             if (gameProgression < 2) {
                 pieceValueScore += piece.onFavouriteTile() * piece.getValue() / 10;
             }
@@ -57,38 +50,8 @@ public class FirstGenerationEvaluator implements Evaluator {
         return pieceValueScore;
     }
 
-    private int mobility(Player player) {
-        int mobilityScore = 0;
-        mobilityScore += player.getLegalMoves().size() * 5;
-        if (player.getQueen() != null) { 
-            mobilityScore += player.getQueen().getLegalMoves().size() * 10;
-        }
-        for (final Piece piece : player.getActivePieces()) {
-            switch (piece.getName()) {
-                case PAWN:
-                    mobilityScore += piece.getLegalMoves().size() * 5;
-                    break;
-                case KNIGHT:
-                    mobilityScore += piece.getLegalMoves().size() * 50;
-                    break;
-                case BISHOP:
-                    mobilityScore += piece.getLegalMoves().size() * 50;
-                    break;
-                case ROOK:
-                    mobilityScore += piece.getLegalMoves().size() * 10 * (gameProgression / 12);
-                    break;
-                case QUEEN:
-                    mobilityScore += piece.getLegalMoves().size() * 10 * (gameProgression / 12);
-                    break;
-                case KING:
-                    mobilityScore += piece.getLegalMoves().size() * 5;
-                    break;
-                default:
-                    break;
-            }
-        }
-       
-        return mobilityScore;
+    private int mobilityRatio(Player player) {
+        return (int) Math.floor(player.getLegalMoves().size() * 10 / player.getOpponent().getLegalMoves().size());
     }
 
     private static int attacks(Player player) {
@@ -97,8 +60,11 @@ public class FirstGenerationEvaluator implements Evaluator {
             if (move.isAttack()) {
                 Piece movedPiece = move.getMovedPiece();
                 Piece attackedPiece = move.getInteractedPiece();
-                if (movedPiece.getValue() > attackedPiece.getValue()) {
-                    attackScore += attackedPiece.getValue();
+                if (movedPiece.getValue() <= attackedPiece.getValue()) {
+                    attackScore ++;
+                    if(attackedPiece.getName() == Name.QUEEN) {
+                        attackScore += 2;
+                    }
                 }
             }
         }
@@ -108,8 +74,6 @@ public class FirstGenerationEvaluator implements Evaluator {
     private int kingSafety(Player player) {
         int kingSafetyScore = 0;
         kingSafetyScore = 50 * (player.isCastled() ? 50 : 1) * 1 / (player.getKing().getLegalMoves().size() + 1);
-        
-        System.out.println("King safety score: " + kingSafetyScore);
         return kingSafetyScore;
     }
 
@@ -118,7 +82,7 @@ public class FirstGenerationEvaluator implements Evaluator {
     }
 
     private static int depthBonus(int depth) {
-        return depth == 0 ? 1 : PAWN_VALUE * depth;
+        return 1;
     }
 
     private static int check(Player player) {
@@ -129,38 +93,6 @@ public class FirstGenerationEvaluator implements Evaluator {
         return player.isCastled() ? CASTLE_BONUS : 0;
     }
 
-    //unsafe queen penalty
-    private static int queenSafety(Player player) {
-        Queen queen = player.getQueen();
-        int queenSafetyScore = 0;
-        if (queen != null) {
-            for (Move move : player.getOpponent().getLegalMoves()) {
-                if (move.getDestinationCoordinate() == queen.getCoordinates()) {
-                    
-                    queenSafetyScore -= queen.getValue() * 10;
-                    System.out.println("Queen is in danger! " + move);
-                }
-            }
-            
-        }
-        return queenSafetyScore;
-    }
-
-    //unsafe major piece penalty
-    private static int majorPieceSafety(Player player) {
-        int majorPieceSafetyScore = 0;
-        for (final Piece piece : player.getActivePieces()) {
-            if (piece.isMajorPiece()) {
-                for (Move move : player.getOpponent().getLegalMoves()) {
-                    if (move.getDestinationCoordinate() == piece.getCoordinates()) {
-                        majorPieceSafetyScore -= piece.getValue() * PAWN_VALUE;
-                        System.out.println("Major piece is in danger! " + move);
-                    }
-                }
-            }
-        }
-        return majorPieceSafetyScore;
-    }
 
     
 
