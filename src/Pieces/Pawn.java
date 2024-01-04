@@ -124,9 +124,9 @@ public class Pawn extends Piece{
 
     @Override
     public int onFavouriteTile() {
-        //prefers castling
+        //prefers center
         if (colour == Colour.WHITE) {
-            if (this.coordinates == 43 || this.coordinates == 44) {
+            if (this.coordinates == 35 || this.coordinates == 36) {
                 return 100;
             }  else {
                 return 1;
