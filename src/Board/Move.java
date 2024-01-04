@@ -127,7 +127,8 @@ public class Move {
 
 
         public boolean isAttack() {
-            return moveType == MoveType.ATTACK || moveType == MoveType.PAWN_ATTACK || moveType == MoveType.PAWN_ENPASSANT_ATTACK; 
+            return moveType == MoveType.ATTACK || moveType == MoveType.PAWN_ATTACK || 
+            moveType == MoveType.PAWN_ENPASSANT_ATTACK || moveType == MoveType.PAWN_PROMOTION_ATTACK; 
         }
 
         public Piece getInteractedPiece() {
